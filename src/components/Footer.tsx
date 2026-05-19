@@ -1,0 +1,69 @@
+"use client";
+
+import { motion } from "framer-motion";
+
+export default function Footer() {
+  return (
+    <footer className="relative border-t border-white/[0.04] py-12 px-6 md:px-12">
+      {/* Top divider glow */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(79,195,247,0.15), transparent)" }}
+      />
+
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Logo + tagline */}
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <span
+              className="font-display font-black text-soft-white/80 text-sm"
+              style={{ letterSpacing: "0.4em" }}
+            >
+              TMSTRY
+            </span>
+            <span className="text-silver/30 text-[10px] tracking-widest" style={{ letterSpacing: "0.2em" }}>
+              Human // Signal // AI
+            </span>
+          </div>
+
+          {/* Center — signal icon */}
+          <div className="flex items-center gap-3 opacity-20">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-glow-blue/50" />
+            <div className="w-1 h-1 rounded-full bg-glow-blue" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-glow-pink/50" />
+          </div>
+
+          {/* Copyright */}
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <p className="text-silver/25 text-[10px] tracking-widest" style={{ letterSpacing: "0.2em" }}>
+              © {new Date().getFullYear()} TMSTRY. All rights reserved.
+            </p>
+            <p className="text-silver/15 text-[9px] tracking-widest" style={{ letterSpacing: "0.15em" }}>
+              Human emotion through artificial minds.
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom row */}
+        <div className="mt-10 pt-8 border-t border-white/[0.03] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex gap-6">
+            {["Privacy", "Terms", "Press"].map((link) => (
+              <a
+                key={link}
+                href="#"
+                className="text-silver/25 hover:text-silver/60 text-[10px] tracking-widest uppercase transition-colors duration-300"
+                style={{ letterSpacing: "0.2em" }}
+              >
+                {link}
+              </a>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 opacity-30">
+            <div className="w-1 h-1 rounded-full bg-glow-blue animate-pulse" />
+            <span className="text-silver/40 text-[9px] font-mono tracking-widest">SIGNAL ACTIVE</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
