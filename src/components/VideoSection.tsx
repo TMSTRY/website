@@ -6,28 +6,28 @@ import FadeInSection from "./FadeInSection";
 
 const videos = [
   {
-    id: "dQw4w9WgXcQ",
+    id: "fK4z0vTYh7g",
     title: "Human // Signal // AI — Official Visual",
     subtitle: "Official Video",
     duration: "4:32",
     featured: true,
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "fK4z0vTYh7g",
     title: "Neural Drift",
     subtitle: "Music Video",
     duration: "3:47",
     featured: false,
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "fK4z0vTYh7g",
     title: "Ghost Signal",
     subtitle: "Lyric Video",
     duration: "5:12",
     featured: false,
   },
   {
-    id: "dQw4w9WgXcQ",
+    id: "fK4z0vTYh7g",
     title: "Live at Parallax",
     subtitle: "Live Session",
     duration: "28:14",
@@ -235,7 +235,7 @@ export default function VideoSection() {
           {/* YouTube channel link */}
           <FadeInSection delay={0.3} className="mt-12 text-center">
             <a
-              href="https://youtube.com"
+              href="https://www.youtube.com/@TMSTRY-music"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 text-silver/60 hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300 group"

@@ -9,12 +9,11 @@ export default function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
 
-  // Parallax layers at different speeds
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const yAvatar = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "8%"]);
-  const opacityHero = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  const scaleBg = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const yBg     = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
+  const scaleBg = useTransform(scrollYProgress, [0, 1], [1, 1.06]);
+  const yLogo   = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const yText   = useTransform(scrollYProgress, [0, 1], ["0%", "6%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -25,35 +24,48 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-obsidian"
       aria-label="Hero"
     >
-      {/* ── Layer 1: background banner image with parallax ── */}
+      {/* ── BG LAYER: Hero website.png — cinematic parallax ── */}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: yBg, scale: scaleBg }}
       >
         <Image
-          src="/branding.png"
+          src="/hero-website.png"
           alt=""
           fill
           priority
-          quality={90}
+          quality={95}
           className="object-cover object-center"
-          style={{ opacity: 0.18 }}
+          style={{ opacity: 0.55 }}
         />
-        {/* Dark vignette over the image */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `
-              radial-gradient(ellipse 70% 60% at 50% 50%, transparent 20%, rgba(8,10,14,0.7) 70%, rgba(8,10,14,0.95) 100%),
-              linear-gradient(to bottom, rgba(8,10,14,0.4) 0%, transparent 20%, transparent 70%, rgba(8,10,14,1) 100%)
-            `,
-          }}
-        />
+        {/* Top fade */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(to bottom,
+              rgba(8,10,14,0.5) 0%,
+              rgba(8,10,14,0.1) 25%,
+              rgba(8,10,14,0.1) 60%,
+              rgba(8,10,14,0.85) 88%,
+              rgba(8,10,14,1) 100%
+            )
+          `,
+        }} />
+        {/* Side fades */}
+        <div className="absolute inset-0" style={{
+          background: `
+            linear-gradient(to right,
+              rgba(8,10,14,0.6) 0%,
+              transparent 20%,
+              transparent 80%,
+              rgba(8,10,14,0.6) 100%
+            )
+          `,
+        }} />
       </motion.div>
 
-      {/* ── Layer 2: subtle grid ── */}
+      {/* ── Subtle grid overlay ── */}
       <div
-        className="absolute inset-0 z-0 opacity-[0.025] pointer-events-none"
+        className="absolute inset-0 z-0 pointer-events-none opacity-[0.025]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(79,195,247,1) 1px, transparent 1px),
@@ -63,102 +75,100 @@ export default function HeroSection() {
         }}
       />
 
-      {/* ── Layer 3: particles ── */}
+      {/* ── Particles ── */}
       {mounted && <ParticleField />}
 
-      {/* ── Layer 4: avatar image — centred, parallax, faded ── */}
-      <motion.div
-        className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none"
-        style={{ y: yAvatar, opacity: opacityHero }}
-      >
-        <motion.div
-          className="relative"
-          style={{ width: "min(560px, 80vw)", aspectRatio: "1 / 1" }}
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <Image
-            src="/mini-avatar-1.png"
-            alt="TMSTRY"
-            fill
-            priority
-            quality={90}
-            className="object-contain"
-            style={{ opacity: 0.55, mixBlendMode: "screen" }}
-          />
-          {/* Soft bloom underneath the image */}
-          <div
-            className="absolute inset-0 -z-10 blur-3xl scale-75"
-            style={{
-              background: "radial-gradient(ellipse at center, rgba(79,195,247,0.12) 0%, rgba(224,64,251,0.08) 50%, transparent 80%)",
-            }}
-          />
-        </motion.div>
-      </motion.div>
-
-      {/* ── Layer 5: animated ambient orbs ── */}
+      {/* ── Animated ambient glow orbs ── */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <motion.div
           className="absolute rounded-full"
           style={{
-            width: "700px", height: "700px",
+            width: "800px", height: "800px",
             left: "50%", top: "50%",
             transform: "translate(-50%, -50%)",
-            background: "radial-gradient(circle, rgba(79,195,247,0.035) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(79,195,247,0.03) 0%, transparent 70%)",
           }}
-          animate={{ scale: [1, 1.12, 1] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute rounded-full"
           style={{
-            width: "1000px", height: "1000px",
+            width: "1100px", height: "1100px",
             left: "50%", top: "50%",
             transform: "translate(-50%, -50%)",
-            background: "radial-gradient(circle, rgba(224,64,251,0.02) 0%, transparent 60%)",
+            background: "radial-gradient(circle, rgba(224,64,251,0.018) 0%, transparent 60%)",
           }}
-          animate={{ scale: [1.05, 1, 1.05] }}
-          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: [1.04, 1, 1.04] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
-      {/* ── Layer 6: text content ── */}
+      {/* ── LOGO LAYER: circle logo 2.png ── */}
       <motion.div
-        style={{ y: yText, opacity: opacityHero }}
-        className="relative z-10 flex flex-col items-center text-center px-6"
+        className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none"
+        style={{ y: yLogo, opacity }}
+      >
+        <motion.div
+          className="relative"
+          style={{ width: "min(320px, 55vw)", aspectRatio: "1 / 1" }}
+          initial={{ opacity: 0, scale: 0.88 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Image
+            src="/circle-logo.png"
+            alt="TMSTRY"
+            fill
+            priority
+            quality={95}
+            className="object-contain"
+            style={{ opacity: 0.9, mixBlendMode: "screen" }}
+          />
+          {/* Glow bloom behind logo */}
+          <motion.div
+            className="absolute inset-0 -z-10 scale-125 blur-3xl"
+            style={{
+              background: "radial-gradient(ellipse at center, rgba(156,106,255,0.15) 0%, rgba(79,195,247,0.08) 50%, transparent 80%)",
+            }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+      </motion.div>
+
+      {/* ── TEXT CONTENT ── */}
+      <motion.div
+        style={{ y: yText, opacity }}
+        className="relative z-10 flex flex-col items-center text-center px-6 mt-[min(22vw,220px)]"
       >
         {/* Eyebrow */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="mb-8 flex items-center gap-3"
+          transition={{ duration: 1, delay: 0.5 }}
+          className="mb-6 flex items-center gap-3"
         >
-          <div className="h-px w-8 bg-glow-blue opacity-50" />
+          <div className="h-px w-8 opacity-50" style={{ background: "#4fc3f7" }} />
           <span
             className="text-[10px] tracking-widest uppercase font-medium"
             style={{ letterSpacing: "0.4em", color: "#4fc3f7" }}
           >
             Human // Signal // AI
           </span>
-          <div className="h-px w-8 bg-glow-blue opacity-50" />
+          <div className="h-px w-8 opacity-50" style={{ background: "#4fc3f7" }} />
         </motion.div>
 
-        {/* Main title */}
+        {/* Artist name */}
         <motion.h1
-          initial={{ opacity: 0, y: 36 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.4, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display font-black text-soft-white leading-none mb-8 relative"
+          transition={{ duration: 1.4, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display font-black text-soft-white leading-none mb-6 relative"
           style={{
-            fontSize: "clamp(4.5rem, 20vw, 15rem)",
+            fontSize: "clamp(3.5rem, 16vw, 12rem)",
             letterSpacing: "0.1em",
-            textShadow: `
-              0 0 40px rgba(79,195,247,0.2),
-              0 0 100px rgba(79,195,247,0.08),
-              0 0 200px rgba(156,106,255,0.06)
-            `,
+            textShadow: "0 0 60px rgba(79,195,247,0.18), 0 0 160px rgba(156,106,255,0.08)",
           }}
         >
           TMSTRY
@@ -167,16 +177,16 @@ export default function HeroSection() {
             style={{ background: "linear-gradient(90deg, transparent, rgba(79,195,247,0.5), transparent)" }}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
-            transition={{ duration: 1.8, delay: 1.4 }}
+            transition={{ duration: 1.8, delay: 1.6 }}
           />
         </motion.h1>
 
         {/* Tagline */}
         <motion.p
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.9 }}
-          className="text-silver text-sm md:text-base lg:text-lg max-w-sm leading-relaxed"
+          transition={{ duration: 1, delay: 1 }}
+          className="text-silver text-sm md:text-base max-w-sm leading-relaxed"
           style={{ letterSpacing: "0.06em" }}
         >
           Human emotion through artificial minds.
@@ -184,10 +194,10 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-          className="mt-12 flex flex-col sm:flex-row gap-4"
+          transition={{ duration: 1, delay: 1.3 }}
+          className="mt-10 flex flex-col sm:flex-row gap-4"
         >
           <button
             onClick={() => document.querySelector("#music")?.scrollIntoView({ behavior: "smooth" })}
@@ -209,7 +219,7 @@ export default function HeroSection() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
+          transition={{ duration: 1, delay: 2.2 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
         >
           <span className="text-silver/30 text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.3em" }}>

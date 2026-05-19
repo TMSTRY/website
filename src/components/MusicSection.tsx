@@ -38,11 +38,11 @@ function AlbumCover({ size = "large" }: { size?: "large" | "small" }) {
   return (
     <div className="w-full aspect-square relative overflow-hidden bg-obsidian">
       <Image
-        src="/branding.png"
+        src="/circle-logo.png"
         alt="TMSTRY — Human // Signal // AI"
         fill
         quality={90}
-        className="object-cover object-center"
+        className="object-contain object-center p-8"
       />
       {/* Subtle vignette */}
       <div
@@ -171,7 +171,7 @@ export default function MusicSection() {
 
                 {/* Stream button */}
                 <a
-                  href="https://open.spotify.com"
+                  href="https://open.spotify.com/artist/6N2jkKJIcbzHwMs4cswMpw"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1DB954]/10 border border-[#1DB954]/30 text-[#1DB954] text-xs tracking-widest uppercase hover:bg-[#1DB954]/20 transition-all duration-300"
