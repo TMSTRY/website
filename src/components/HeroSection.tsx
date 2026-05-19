@@ -11,7 +11,6 @@ export default function HeroSection() {
 
   const yBg     = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
   const scaleBg = useTransform(scrollYProgress, [0, 1], [1, 1.06]);
-  const yLogo   = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
   const yText   = useTransform(scrollYProgress, [0, 1], ["0%", "6%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
@@ -104,43 +103,10 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* ── LOGO LAYER: circle logo 2.png ── */}
-      <motion.div
-        className="absolute inset-0 z-[2] flex items-center justify-center pointer-events-none"
-        style={{ y: yLogo, opacity }}
-      >
-        <motion.div
-          className="relative"
-          style={{ width: "min(320px, 55vw)", aspectRatio: "1 / 1" }}
-          initial={{ opacity: 0, scale: 0.88 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <Image
-            src="/circle-logo.png"
-            alt="TMSTRY"
-            fill
-            priority
-            quality={95}
-            className="object-contain"
-            style={{ opacity: 0.9, mixBlendMode: "screen" }}
-          />
-          {/* Glow bloom behind logo */}
-          <motion.div
-            className="absolute inset-0 -z-10 scale-125 blur-3xl"
-            style={{
-              background: "radial-gradient(ellipse at center, rgba(156,106,255,0.15) 0%, rgba(79,195,247,0.08) 50%, transparent 80%)",
-            }}
-            animate={{ opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </motion.div>
-
       {/* ── TEXT CONTENT ── */}
       <motion.div
         style={{ y: yText, opacity }}
-        className="relative z-10 flex flex-col items-center text-center px-6 mt-[min(22vw,220px)]"
+        className="relative z-10 flex flex-col items-center text-center px-6"
       >
         {/* Eyebrow */}
         <motion.div
