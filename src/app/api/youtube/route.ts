@@ -8,7 +8,7 @@ export interface YTVideo {
   url: string;
 }
 
-const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? "";
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? "UCtxAcT-Bgi5Q9O-jsptkeOw";
 
 export async function GET() {
   if (!CHANNEL_ID) {
