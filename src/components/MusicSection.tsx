@@ -35,34 +35,22 @@ const releases = [
 ];
 
 function AlbumCover({ size = "large" }: { size?: "large" | "small" }) {
-  const dim = size === "large" ? "w-full aspect-square" : "w-full aspect-square";
   return (
-    <div className={`${dim} relative overflow-hidden bg-deep-gray`}>
-      {/* Placeholder album art with TMSTRY branding */}
+    <div className="w-full aspect-square relative overflow-hidden bg-obsidian">
+      <Image
+        src="/branding.png"
+        alt="TMSTRY — Human // Signal // AI"
+        fill
+        quality={90}
+        className="object-cover object-center"
+      />
+      {/* Subtle vignette */}
       <div
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse at center, rgba(79,195,247,0.12) 0%, rgba(156,106,255,0.08) 40%, rgba(8,10,14,1) 100%)",
+          background: "radial-gradient(ellipse at center, transparent 50%, rgba(8,10,14,0.3) 100%)",
         }}
-      >
-        {/* T logo placeholder */}
-        <div className="relative flex items-center justify-center">
-          <div
-            className="absolute rounded-full border border-glow-blue/20"
-            style={{ width: size === "large" ? "160px" : "80px", height: size === "large" ? "160px" : "80px" }}
-          />
-          <div
-            className="absolute rounded-full border border-glow-pink/10"
-            style={{ width: size === "large" ? "220px" : "110px", height: size === "large" ? "220px" : "110px" }}
-          />
-          <span
-            className="font-display font-black text-soft-white/20"
-            style={{ fontSize: size === "large" ? "4rem" : "2rem", letterSpacing: "0.15em" }}
-          >
-            T
-          </span>
-        </div>
-      </div>
+      />
     </div>
   );
 }
