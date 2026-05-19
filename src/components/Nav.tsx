@@ -7,6 +7,7 @@ const navLinks = [
   { href: "#music", label: "Music" },
   { href: "#video", label: "Video" },
   { href: "#about", label: "About" },
+  { href: "#press", label: "Press" },
   { href: "#connect", label: "Connect" },
 ];
 

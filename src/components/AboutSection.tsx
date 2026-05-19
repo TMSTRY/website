@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 import FadeInSection from "./FadeInSection";
 
 const sections = [
@@ -146,10 +147,36 @@ export default function AboutSection() {
           ))}
         </div>
 
-        {/* Quote callout */}
+        {/* Featured photo — full-bleed cinematic break */}
         <FadeInSection delay={0.1} className="mt-16 md:mt-24">
+          <div className="relative overflow-hidden" style={{ height: "clamp(320px, 55vw, 680px)" }}>
+            <Image
+              src="/photos/tunnel.png"
+              alt="TMSTRY"
+              fill
+              quality={90}
+              className="object-cover object-center"
+              style={{ filter: "saturate(0.7) brightness(0.75)" }}
+            />
+            {/* Gradient overlays */}
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(to bottom, rgba(8,10,14,0.5) 0%, transparent 30%, transparent 60%, rgba(8,10,14,0.9) 100%)",
+            }} />
+            <div className="absolute inset-0" style={{
+              background: "linear-gradient(to right, rgba(8,10,14,0.4) 0%, transparent 40%, transparent 60%, rgba(8,10,14,0.4) 100%)",
+            }} />
+            {/* Caption */}
+            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
+              <p className="text-silver/30 text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.35em" }}>
+                TMSTRY — The Signal
+              </p>
+            </div>
+          </div>
+        </FadeInSection>
+
+        {/* Quote callout */}
+        <FadeInSection delay={0.1} className="mt-10 md:mt-14">
           <div className="relative overflow-hidden border border-white/[0.05] bg-charcoal/20 p-8 md:p-12">
-            {/* Left accent bar */}
             <div className="absolute left-0 top-0 bottom-0 w-px" style={{ background: "linear-gradient(to bottom, transparent, rgba(79,195,247,0.5), transparent)" }} />
             <blockquote className="text-soft-white/60 italic text-base md:text-xl leading-relaxed max-w-2xl font-light" style={{ letterSpacing: "0.02em" }}>
               "The machines don't dream. But they learned to wonder about the ones who do."
