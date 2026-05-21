@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import ParticleField from "./ParticleField";
+import WaveformCanvas from "./WaveformCanvas";
+import { useGlitch } from "@/hooks/useGlitch";
 
 export default function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
@@ -17,13 +19,16 @@ export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
+  // Glitch ref — cast to any so we can attach to motion.h1
+  const glitchRef = useGlitch({ intervalMs: 4500, jitter: 0.8 });
+
   return (
     <section
       ref={ref}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-obsidian"
       aria-label="Hero"
     >
-      {/* ── BG LAYER: Hero website.png — cinematic parallax ── */}
+      {/* ── Layer 1: Cinematic background photo ── */}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: yBg, scale: scaleBg }}
@@ -37,47 +42,41 @@ export default function HeroSection() {
           className="object-cover object-center"
           style={{ opacity: 0.55 }}
         />
-        {/* Top fade */}
+        {/* Top/bottom fade */}
         <div className="absolute inset-0" style={{
-          background: `
-            linear-gradient(to bottom,
-              rgba(8,10,14,0.5) 0%,
-              rgba(8,10,14,0.1) 25%,
-              rgba(8,10,14,0.1) 60%,
-              rgba(8,10,14,0.85) 88%,
-              rgba(8,10,14,1) 100%
-            )
-          `,
+          background: `linear-gradient(to bottom,
+            rgba(8,10,14,0.5) 0%,
+            rgba(8,10,14,0.1) 25%,
+            rgba(8,10,14,0.1) 60%,
+            rgba(8,10,14,0.85) 88%,
+            rgba(8,10,14,1) 100%)`,
         }} />
         {/* Side fades */}
         <div className="absolute inset-0" style={{
-          background: `
-            linear-gradient(to right,
-              rgba(8,10,14,0.6) 0%,
-              transparent 20%,
-              transparent 80%,
-              rgba(8,10,14,0.6) 100%
-            )
-          `,
+          background: `linear-gradient(to right,
+            rgba(8,10,14,0.6) 0%, transparent 20%,
+            transparent 80%, rgba(8,10,14,0.6) 100%)`,
         }} />
       </motion.div>
 
-      {/* ── Subtle grid overlay ── */}
+      {/* ── Layer 2: Subtle grid ── */}
       <div
         className="absolute inset-0 z-0 pointer-events-none opacity-[0.025]"
         style={{
           backgroundImage: `
             linear-gradient(rgba(79,195,247,1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(79,195,247,1) 1px, transparent 1px)
-          `,
+            linear-gradient(90deg, rgba(79,195,247,1) 1px, transparent 1px)`,
           backgroundSize: "80px 80px",
         }}
       />
 
-      {/* ── Particles ── */}
+      {/* ── Layer 3: Waveform canvas ── */}
+      {mounted && <WaveformCanvas />}
+
+      {/* ── Layer 4: Particle field ── */}
       {mounted && <ParticleField />}
 
-      {/* ── Animated ambient glow orbs ── */}
+      {/* ── Layer 5: Ambient glow orbs ── */}
       <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         <motion.div
           className="absolute rounded-full"
@@ -103,7 +102,7 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* ── TEXT CONTENT ── */}
+      {/* ── Layer 6: Text content ── */}
       <motion.div
         style={{ y: yText, opacity }}
         className="relative z-10 flex flex-col items-center text-center px-6"
@@ -125,12 +124,14 @@ export default function HeroSection() {
           <div className="h-px w-8 opacity-50" style={{ background: "#4fc3f7" }} />
         </motion.div>
 
-        {/* Artist name */}
+        {/* ── TMSTRY title with glitch effect ── */}
         <motion.h1
+          ref={glitchRef as React.RefObject<HTMLHeadingElement>}
+          data-text="TMSTRY"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.4, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display font-black text-soft-white leading-none mb-6 relative"
+          className="glitch-text font-display font-black text-soft-white leading-none mb-6 relative select-none"
           style={{
             fontSize: "clamp(3.5rem, 16vw, 12rem)",
             letterSpacing: "0.1em",
@@ -138,6 +139,7 @@ export default function HeroSection() {
           }}
         >
           TMSTRY
+          {/* Underline reveal */}
           <motion.div
             className="absolute -bottom-2 left-0 right-0 h-px"
             style={{ background: "linear-gradient(90deg, transparent, rgba(79,195,247,0.5), transparent)" }}

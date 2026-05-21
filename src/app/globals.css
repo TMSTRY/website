@@ -136,3 +136,76 @@ body {
   height: 100%;
   pointer-events: none;
 }
+
+/* ─── Glitch animation on TMSTRY hero title ─────────────────────────────── */
+.glitch-text {
+  position: relative;
+  /* CSS custom props set by useGlitch hook */
+  --gl-slice-y:  40%;
+  --gl-offset-x: 0px;
+  --gl-r-offset: 0px;
+  --gl-b-offset: 0px;
+}
+
+/* Red channel clone */
+.glitch-text::before,
+/* Blue channel clone */
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glitch-text::before {
+  color: rgba(255, 60, 60, 0.75);
+  clip-path: polygon(0 0, 100% 0, 100% var(--gl-slice-y), 0 var(--gl-slice-y));
+}
+.glitch-text::after {
+  color: rgba(60, 160, 255, 0.75);
+  clip-path: polygon(0 var(--gl-slice-y), 100% var(--gl-slice-y), 100% 100%, 0 100%);
+}
+
+/* Active glitch state — driven by data attribute from useGlitch */
+.glitch-text[data-glitching="true"]::before {
+  opacity: 1;
+  transform: translateX(calc(var(--gl-r-offset) + var(--gl-offset-x)));
+  animation: glitch-slice-top 0.12s steps(1) forwards;
+}
+.glitch-text[data-glitching="true"]::after {
+  opacity: 1;
+  transform: translateX(calc(var(--gl-b-offset) - var(--gl-offset-x)));
+  animation: glitch-slice-bot 0.12s steps(1) forwards;
+}
+
+/* The main text also jogs slightly */
+.glitch-text[data-glitching="true"] {
+  animation: glitch-body 0.12s steps(2) forwards;
+}
+
+@keyframes glitch-body {
+  0%   { transform: translateX(0); filter: none; }
+  33%  { transform: translateX(calc(var(--gl-offset-x) * 0.5)); filter: brightness(1.15); }
+  66%  { transform: translateX(calc(var(--gl-offset-x) * -0.3)); }
+  100% { transform: translateX(0); filter: none; }
+}
+
+@keyframes glitch-slice-top {
+  0%   { clip-path: polygon(0 0, 100% 0, 100% var(--gl-slice-y), 0 var(--gl-slice-y)); }
+  50%  { clip-path: polygon(0 5%, 100% 5%, 100% calc(var(--gl-slice-y) - 8%), 0 calc(var(--gl-slice-y) - 8%)); }
+  100% { clip-path: polygon(0 0, 100% 0, 100% var(--gl-slice-y), 0 var(--gl-slice-y)); opacity: 0; }
+}
+
+@keyframes glitch-slice-bot {
+  0%   { clip-path: polygon(0 var(--gl-slice-y), 100% var(--gl-slice-y), 100% 100%, 0 100%); }
+  50%  { clip-path: polygon(0 calc(var(--gl-slice-y) + 8%), 100% calc(var(--gl-slice-y) + 8%), 100% 95%, 0 95%); }
+  100% { clip-path: polygon(0 var(--gl-slice-y), 100% var(--gl-slice-y), 100% 100%, 0 100%); opacity: 0; }
+}
