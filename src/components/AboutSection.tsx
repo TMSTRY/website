@@ -282,7 +282,7 @@ export default function AboutSection() {
                 alt="TMSTRY"
                 fill
                 quality={90}
-                className="object-cover object-top"
+                className="object-cover object-center"
                 style={{ filter: "saturate(0.7) brightness(0.75)" }}
               />
               <div className="absolute inset-0" style={{
@@ -291,11 +291,6 @@ export default function AboutSection() {
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to right, rgba(8,10,14,0.35) 0%, transparent 40%, transparent 60%, rgba(8,10,14,0.35) 100%)",
               }} />
-              <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8">
-                <p className="text-silver/25 text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.35em" }}>
-                  TMSTRY — The Signal
-                </p>
-              </div>
             </div>
           </FadeInSection>
 
