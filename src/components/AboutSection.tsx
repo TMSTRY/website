@@ -276,14 +276,14 @@ export default function AboutSection() {
 
           {/* Featured photo break */}
           <FadeInSection delay={0.1} className="mt-20 md:mt-28">
-            <div className="relative overflow-hidden" style={{ height: "clamp(280px, 45vw, 560px)" }}>
+            <div className="relative overflow-hidden" style={{ height: "clamp(420px, 65vw, 780px)" }}>
               <Image
                 src="/photos/artistiek.png"
                 alt="TMSTRY"
                 fill
                 quality={90}
-                className="object-cover object-center"
-                style={{ filter: "saturate(0.7) brightness(0.75)" }}
+                className="object-cover"
+                style={{ objectPosition: "50% 8%", filter: "saturate(0.7) brightness(0.75)" }}
               />
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to bottom, rgba(8,10,14,0.4) 0%, transparent 30%, transparent 65%, rgba(8,10,14,0.95) 100%)",
