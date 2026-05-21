@@ -151,11 +151,11 @@ export default function AboutSection() {
         <FadeInSection delay={0.1} className="mt-16 md:mt-24">
           <div className="relative overflow-hidden" style={{ height: "clamp(320px, 55vw, 680px)" }}>
             <Image
-              src="/photos/tunnel.png"
+              src="/photos/artistiek.png"
               alt="TMSTRY"
               fill
               quality={90}
-              className="object-cover object-center"
+              className="object-cover object-top"
               style={{ filter: "saturate(0.7) brightness(0.75)" }}
             />
             {/* Gradient overlays */}
