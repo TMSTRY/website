@@ -79,13 +79,13 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
 
           {/* Image */}
           {post.image?.asset && (
-            <div className="relative w-full mb-8 overflow-hidden"
-              style={{ aspectRatio: "16/9" }}>
+            <div className="w-full mb-8 overflow-hidden">
               <Image
                 src={urlFor(post.image).width(900).url()}
                 alt={post.title}
-                fill
-                className="object-cover"
+                width={900}
+                height={900}
+                className="w-full h-auto block"
                 style={{ filter: "saturate(0.8) brightness(0.85)" }}
               />
             </div>
