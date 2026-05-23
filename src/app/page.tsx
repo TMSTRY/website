@@ -6,6 +6,7 @@ import VideoSection from "@/components/VideoSection";
 import AboutSection from "@/components/AboutSection";
 import SocialSection from "@/components/SocialSection";
 import PressSection from "@/components/PressSection";
+import NewsSection from "@/components/NewsSection";
 import Footer from "@/components/Footer";
 
 const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
@@ -33,6 +34,10 @@ export default function Home() {
       <div className="section-divider mx-12 md:mx-24" />
 
       <PressSection />
+
+      <div className="section-divider mx-12 md:mx-24" />
+
+      <NewsSection />
 
       <div className="section-divider mx-12 md:mx-24" />
 

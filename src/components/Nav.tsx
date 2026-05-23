@@ -9,6 +9,7 @@ const navLinks = [
   { href: "#video", label: "Video" },
   { href: "#about", label: "About" },
   { href: "#press", label: "Press" },
+  { href: "#news", label: "News" },
   { href: "#connect", label: "Connect" },
 ];
 
