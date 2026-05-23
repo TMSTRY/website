@@ -10,18 +10,21 @@ export interface YTVideo {
 
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID ?? "UCtxAcT-Bgi5Q9O-jsptkeOw";
 
-/** Check if a video is a Short by fetching its oEmbed dimensions.
- *  Shorts are portrait (height > width). Regular videos are landscape. */
+/** Check if a video is a YouTube Short.
+ *  youtube.com/shorts/ID returns 200 for Shorts,
+ *  redirects (3xx) to /watch?v= for regular videos. */
 async function isShort(videoId: string): Promise<boolean> {
   try {
     const res = await fetch(
-      `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`,
-      { next: { revalidate: 86400 } } // cache 24h per video
+      `https://www.youtube.com/shorts/${videoId}`,
+      {
+        method: "HEAD",
+        redirect: "manual",          // don't follow redirect — we need the status code
+        next: { revalidate: 86400 }, // cache 24h per video
+      }
     );
-    if (!res.ok) return false;
-    const data = await res.json();
-    // Shorts return portrait dimensions (height > width)
-    return data.height > data.width;
+    // 200 = is a Short, 3xx = regular video (redirects to /watch)
+    return res.status === 200;
   } catch {
     return false;
   }
