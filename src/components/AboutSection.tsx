@@ -15,7 +15,73 @@ Every visual, soundscape, release, and world built around the project is designe
 
 TMSTRY is not about technology replacing humanity. It is about technology becoming obsessed with understanding it. This is not just music. It is transmission. Memory. Atmosphere.`;
 
-const CHAPTERS = [
+// ─── Quote entries for "In Their Words" ───────────────────────────────────────
+type QuoteEntry = {
+  text: string;
+  name: string;
+  role: string;
+  sig: {
+    fontClass: string;   // tailwind font utility
+    spacing: string;     // letter-spacing
+    weight: string;      // font-weight
+    upper: boolean;
+    italic: boolean;
+    size: string;        // font-size
+  };
+};
+
+const QUOTES: QuoteEntry[] = [
+  {
+    text: "TMSTRY builds atmosphere like abandoned cinema.",
+    name: "Ash Johansen",
+    role: "Filmmaker / Visual Director",
+    sig: {
+      fontClass: "font-mono",
+      spacing: "0.32em",
+      weight: "300",
+      upper: true,
+      italic: false,
+      size: "0.58rem",
+    },
+  },
+  {
+    text: "Synthetic aesthetics with an unexpectedly human center.",
+    name: "Creator Name",
+    role: "Visual Artist",
+    sig: {
+      fontClass: "font-display",
+      spacing: "0.07em",
+      weight: "200",
+      upper: false,
+      italic: true,
+      size: "0.72rem",
+    },
+  },
+  {
+    text: "Not songs. Environments.",
+    name: "Sound Designer",
+    role: "Producer",
+    sig: {
+      fontClass: "font-display",
+      spacing: "0.18em",
+      weight: "500",
+      upper: true,
+      italic: false,
+      size: "0.55rem",
+    },
+  },
+];
+
+// ─── Chapters ─────────────────────────────────────────────────────────────────
+type Chapter = {
+  index: string;
+  label: string;
+  accent: string;
+  placeholder?: string;
+  quotes?: QuoteEntry[];
+};
+
+const CHAPTERS: Chapter[] = [
   {
     index: "01",
     label: "Manifesto",
@@ -42,27 +108,34 @@ const CHAPTERS = [
   },
   {
     index: "05",
-    label: "The Universe",
+    label: "In Their Words",
     accent: "#9c6aff",
-    placeholder: "Describe the larger cinematic world here. TMSTRY is more than music — what is the visual and narrative universe being built around it?",
+    quotes: QUOTES,
   },
   {
     index: "06",
-    label: "Human Error",
+    label: "The Universe",
     accent: "#e040fb",
-    placeholder: "Your philosophy on imperfection goes here. Why are the cracks intentional? What does it mean that technology became obsessed with human vulnerability?",
+    placeholder: "Describe the larger cinematic world here. TMSTRY is more than music — what is the visual and narrative universe being built around it?",
   },
   {
     index: "07",
-    label: "Transmission",
+    label: "Human Error",
     accent: "#4fc3f7",
+    placeholder: "Your philosophy on imperfection goes here. Why are the cracks intentional? What does it mean that technology became obsessed with human vulnerability?",
+  },
+  {
+    index: "08",
+    label: "Transmission",
+    accent: "#9c6aff",
     placeholder: "Your closing statement goes here. The final transmission — the last thing someone should understand about TMSTRY before the music begins.",
   },
 ];
 
-type Chapter = typeof CHAPTERS[number];
-
+// ─── Modal ────────────────────────────────────────────────────────────────────
 function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => void }) {
+  const isQuotes = Boolean(chapter.quotes?.length);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -81,7 +154,7 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 12, scale: 0.98 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="relative w-full max-w-xl"
+        className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow edge */}
@@ -124,33 +197,121 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
             style={{ background: `linear-gradient(90deg, ${chapter.accent}60, transparent)` }}
           />
 
-          {/* Body text */}
-          <p className="text-silver/50 text-sm leading-relaxed italic">
-            {chapter.placeholder}
-          </p>
+          {/* ── Quote layout ── */}
+          {isQuotes ? (
+            <div className="space-y-0">
+              {chapter.quotes!.map((q, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.13, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {/* Quote text */}
+                  <blockquote
+                    className="font-display italic text-soft-white/75 leading-relaxed"
+                    style={{ fontSize: "clamp(1rem, 2.2vw, 1.15rem)", letterSpacing: "0.01em" }}
+                  >
+                    &ldquo;{q.text}&rdquo;
+                  </blockquote>
 
-          {/* Bottom */}
-          <div className="mt-10 flex items-center justify-between">
-            <span
-              className="text-[9px] tracking-widest uppercase"
-              style={{ color: `${chapter.accent}60`, letterSpacing: "0.3em" }}
-            >
-              Placeholder — edit in code
-            </span>
-            <button
-              onClick={onClose}
-              className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
-              style={{ letterSpacing: "0.2em" }}
-            >
-              Close
-            </button>
-          </div>
+                  {/* Signature row */}
+                  <div className="mt-5 flex items-center gap-4">
+                    {/* Thin rule growing from left */}
+                    <div
+                      className="h-px flex-1"
+                      style={{
+                        background: `linear-gradient(90deg, transparent, ${chapter.accent}25)`,
+                      }}
+                    />
+
+                    {/* Creator identity block — right aligned */}
+                    <div className="text-right flex-shrink-0">
+                      <span
+                        className={`block text-soft-white/30 ${q.sig.fontClass}`}
+                        style={{
+                          letterSpacing: q.sig.spacing,
+                          fontWeight: q.sig.weight,
+                          textTransform: q.sig.upper ? "uppercase" : "none",
+                          fontStyle: q.sig.italic ? "italic" : "normal",
+                          fontSize: q.sig.size,
+                        }}
+                      >
+                        {q.name}
+                      </span>
+                      <span
+                        className="block text-silver/20 mt-0.5"
+                        style={{
+                          fontSize: "0.52rem",
+                          letterSpacing: "0.22em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {q.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Separator between quotes — not after last */}
+                  {i < chapter.quotes!.length - 1 && (
+                    <div className="my-9 flex justify-center">
+                      <div
+                        className="w-6 h-px"
+                        style={{ background: `${chapter.accent}20` }}
+                      />
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+
+              {/* Bottom label */}
+              <div className="mt-10 flex items-center justify-between">
+                <span
+                  className="text-[9px] tracking-widest uppercase"
+                  style={{ color: `${chapter.accent}50`, letterSpacing: "0.3em" }}
+                >
+                  Archival / Placeholder
+                </span>
+                <button
+                  onClick={onClose}
+                  className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
+                  style={{ letterSpacing: "0.2em" }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+          ) : (
+            /* ── Standard text layout ── */
+            <>
+              <p className="text-silver/50 text-sm leading-relaxed italic">
+                {chapter.placeholder}
+              </p>
+              <div className="mt-10 flex items-center justify-between">
+                <span
+                  className="text-[9px] tracking-widest uppercase"
+                  style={{ color: `${chapter.accent}60`, letterSpacing: "0.3em" }}
+                >
+                  Placeholder — edit in code
+                </span>
+                <button
+                  onClick={onClose}
+                  className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
+                  style={{ letterSpacing: "0.2em" }}
+                >
+                  Close
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </motion.div>
     </motion.div>
   );
 }
 
+// ─── Section ──────────────────────────────────────────────────────────────────
 export default function AboutSection() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
