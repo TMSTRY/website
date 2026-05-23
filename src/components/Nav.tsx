@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   { href: "#music", label: "Music" },
@@ -49,20 +50,23 @@ export default function Nav() {
         </button>
 
         {/* Desktop Nav */}
-        <ul className="hidden md:flex items-center gap-10">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <button
-                onClick={() => handleNavClick(link.href)}
-                className="text-silver hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300 relative group"
-                style={{ letterSpacing: "0.2em" }}
-              >
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-glow-blue group-hover:w-full transition-all duration-300" />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="hidden md:flex items-center gap-10">
+          <ul className="flex items-center gap-10">
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <button
+                  onClick={() => handleNavClick(link.href)}
+                  className="text-silver hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300 relative group"
+                  style={{ letterSpacing: "0.2em" }}
+                >
+                  {link.label}
+                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-glow-blue group-hover:w-full transition-all duration-300" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <ThemeToggle />
+        </div>
 
         {/* Mobile menu button */}
         <button
@@ -97,6 +101,9 @@ export default function Nav() {
                   </button>
                 </li>
               ))}
+              <li className="pt-2 border-t border-white/[0.06]">
+                <ThemeToggle />
+              </li>
             </ul>
           </motion.div>
         )}

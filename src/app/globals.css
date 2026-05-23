@@ -6,6 +6,34 @@
   --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+
+  /* ── Dark theme (default) ── */
+  --bg:          #080a0e;
+  --bg-charcoal: #0f1117;
+  --bg-deep:     #1a1d24;
+  --bg-mid:      #2a2d35;
+  --text:        #e8eaed;
+  --text-silver: #8892a0;
+  --border:      rgba(255,255,255,0.06);
+  --border-soft: rgba(255,255,255,0.04);
+  --noise-opacity: 0.025;
+  --grid-opacity: 0.025;
+  --hero-img-opacity: 0.55;
+}
+
+/* ── Slate theme ── */
+[data-theme="slate"] {
+  --bg:          #141921;
+  --bg-charcoal: #1c2232;
+  --bg-deep:     #242d42;
+  --bg-mid:      #303a52;
+  --text:        #eef1f6;
+  --text-silver: #9baabf;
+  --border:      rgba(255,255,255,0.10);
+  --border-soft: rgba(255,255,255,0.07);
+  --noise-opacity: 0.018;
+  --grid-opacity: 0.035;
+  --hero-img-opacity: 0.65;
 }
 
 * {
@@ -16,15 +44,31 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: #080a0e;
+  background-color: var(--bg);
+  transition: background-color 0.4s ease;
 }
 
 body {
-  background-color: #080a0e;
-  color: #e8eaed;
+  background-color: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
   cursor: none;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
+
+/* Apply theme vars to key Tailwind bg classes */
+.bg-obsidian  { background-color: var(--bg) !important; }
+.bg-charcoal  { background-color: var(--bg-charcoal) !important; }
+.bg-deep-gray { background-color: var(--bg-deep) !important; }
+.bg-mid-gray  { background-color: var(--bg-mid) !important; }
+
+/* Section / card backgrounds using CSS vars */
+.theme-bg         { background-color: var(--bg); transition: background-color 0.4s ease; }
+.theme-surface    { background-color: var(--bg-charcoal); transition: background-color 0.4s ease; }
+.theme-surface-2  { background-color: var(--bg-deep); transition: background-color 0.4s ease; }
+.theme-border     { border-color: var(--border); }
+.theme-text       { color: var(--text); }
+.theme-text-muted { color: var(--text-silver); }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
