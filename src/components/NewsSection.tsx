@@ -2,7 +2,7 @@ import { client } from "@/sanity/lib/client";
 import { newPostsQuery } from "@/sanity/lib/queries";
 import NewsList from "./NewsList";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 export default async function NewsSection() {
   const posts = await client.fetch(newPostsQuery).catch(() => []);
