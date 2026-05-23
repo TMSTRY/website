@@ -6,10 +6,14 @@ import Image from "next/image";
 import FadeInSection from "./FadeInSection";
 import type { YTVideo } from "@/app/api/youtube/route";
 
-// Featured video — always pinned
-const FEATURED_ID = "fK4z0vTYh7g";
-const FEATURED_TITLE = "TMSTRY – Hollow Shape (Symphonic Remix)";
-const FEATURED_SUBTITLE = "Official Music Video";
+// Fallback featured video shown while loading
+const FALLBACK: YTVideo = {
+  id: "fK4z0vTYh7g",
+  title: "TMSTRY – Hollow Shape (Symphonic Remix)",
+  published: "",
+  thumbnail: "https://i.ytimg.com/vi/fK4z0vTYh7g/maxresdefault.jpg",
+  url: "https://www.youtube.com/watch?v=fK4z0vTYh7g",
+};
 
 function VideoThumbnail({
   video,
@@ -160,6 +164,7 @@ function VideoSkeleton() {
 
 export default function VideoSection() {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [featured, setFeatured] = useState<YTVideo>(FALLBACK);
   const [gridVideos, setGridVideos] = useState<YTVideo[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -167,13 +172,13 @@ export default function VideoSection() {
     fetch("/api/youtube")
       .then((r) => r.json())
       .then((data: YTVideo[]) => {
-        if (Array.isArray(data)) {
-          // Exclude featured video, take first 3
-          const filtered = data.filter((v) => v.id !== FEATURED_ID).slice(0, 3);
-          setGridVideos(filtered);
-        }
+        if (!Array.isArray(data) || data.length === 0) return;
+        // API already returns only long-form videos, sorted newest first
+        // Index 0 = featured (latest), indices 1–3 = grid
+        setFeatured(data[0]);
+        setGridVideos(data.slice(1, 4));
       })
-      .catch(() => {}) // fail silently — grid stays empty
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
@@ -202,12 +207,12 @@ export default function VideoSection() {
             </h2>
           </FadeInSection>
 
-          {/* Featured video */}
+          {/* Featured video — always latest long-form */}
           <FadeInSection delay={0.1} className="mb-8 md:mb-10">
             <div className="border border-white/[0.06] p-4 md:p-6 bg-charcoal/20">
               <VideoThumbnail
-                video={{ id: FEATURED_ID, title: FEATURED_TITLE, subtitle: FEATURED_SUBTITLE }}
-                onClick={() => setActiveVideo(FEATURED_ID)}
+                video={{ id: featured.id, title: featured.title, subtitle: "Latest Video" }}
+                onClick={() => setActiveVideo(featured.id)}
                 large
               />
             </div>
