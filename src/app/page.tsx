@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import Nav from "@/components/Nav";
 import HeroSection from "@/components/HeroSection";
 import MusicSection from "@/components/MusicSection";
@@ -8,13 +7,12 @@ import SocialSection from "@/components/SocialSection";
 import PressSection from "@/components/PressSection";
 import NewsSection from "@/components/NewsSection";
 import Footer from "@/components/Footer";
-
-const CustomCursor = dynamic(() => import("@/components/CustomCursor"), { ssr: false });
+import ClientCursor from "@/components/ClientCursor";
 
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-obsidian">
-      <CustomCursor />
+      <ClientCursor />
       <Nav />
       <HeroSection />
 
