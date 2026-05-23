@@ -9,14 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        obsidian: "#080a0e",
-        charcoal: "#0f1117",
-        "deep-gray": "#1a1d24",
-        "mid-gray": "#2a2d35",
-        silver: "#8892a0",
-        "soft-white": "#e8eaed",
-        "glow-blue": "#4fc3f7",
-        "glow-pink": "#e040fb",
+        // These use CSS variable RGB triplets so opacity utilities (bg-obsidian/80 etc) work
+        obsidian:   "rgb(var(--c-bg)       / <alpha-value>)",
+        charcoal:   "rgb(var(--c-surface)  / <alpha-value>)",
+        "deep-gray":"rgb(var(--c-surface2) / <alpha-value>)",
+        "mid-gray": "rgb(var(--c-surface3) / <alpha-value>)",
+        "soft-white":"rgb(var(--c-text)    / <alpha-value>)",
+        silver:     "rgb(var(--c-muted)    / <alpha-value>)",
+        // Fixed accent colours — same in both themes
+        "glow-blue":   "#4fc3f7",
+        "glow-pink":   "#e040fb",
         "glow-purple": "#9c6aff",
         "muted-amber": "#c8a96e",
       },

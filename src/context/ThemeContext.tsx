@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "slate";
+type Theme = "dark" | "light";
 
 interface ThemeContextValue {
   theme: Theme;
@@ -17,20 +17,24 @@ const ThemeContext = createContext<ThemeContextValue>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount — also migrate old "slate" value
   useEffect(() => {
-    const saved = localStorage.getItem("tmstry-theme") as Theme | null;
-    if (saved === "slate" || saved === "dark") {
-      setTheme(saved);
-      document.documentElement.setAttribute("data-theme", saved);
-    }
+    const raw = localStorage.getItem("tmstry-theme");
+    const saved: Theme = raw === "light" || raw === "slate" ? "light" : raw === "dark" ? "dark" : "dark";
+    if (raw === "slate") localStorage.setItem("tmstry-theme", "light"); // migrate
+    setTheme(saved);
+    if (saved === "light") document.documentElement.setAttribute("data-theme", "light");
   }, []);
 
   const toggle = () => {
     setTheme((prev) => {
-      const next = prev === "dark" ? "slate" : "dark";
+      const next: Theme = prev === "dark" ? "light" : "dark";
       localStorage.setItem("tmstry-theme", next);
-      document.documentElement.setAttribute("data-theme", next);
+      if (next === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
       return next;
     });
   };

@@ -40,23 +40,12 @@ export default function HeroSection() {
           priority
           quality={95}
           className="object-cover object-center"
-          style={{ opacity: 0.55 }}
+          style={{ opacity: "var(--hero-img-opacity)" } as React.CSSProperties}
         />
-        {/* Top/bottom fade */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(to bottom,
-            rgba(8,10,14,0.5) 0%,
-            rgba(8,10,14,0.1) 25%,
-            rgba(8,10,14,0.1) 60%,
-            rgba(8,10,14,0.85) 88%,
-            rgba(8,10,14,1) 100%)`,
-        }} />
+        {/* Top/bottom fade — uses CSS var so it adapts to light/dark theme */}
+        <div className="absolute inset-0 hero-fade-vertical" />
         {/* Side fades */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(to right,
-            rgba(8,10,14,0.6) 0%, transparent 20%,
-            transparent 80%, rgba(8,10,14,0.6) 100%)`,
-        }} />
+        <div className="absolute inset-0 hero-fade-horizontal" />
       </motion.div>
 
       {/* ── Layer 2: Subtle grid ── */}
