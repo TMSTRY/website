@@ -99,9 +99,18 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
             </div>
           )}
 
+          {/* Body */}
+          <div className="space-y-4">
+            {post.body.split("\n\n").map((para, i) => (
+              <p key={i} className="text-silver/70 text-sm leading-relaxed">
+                {para}
+              </p>
+            ))}
+          </div>
+
           {/* YouTube embed */}
           {post.youtubeUrl && getYouTubeId(post.youtubeUrl) && (
-            <div className="w-full mb-8 overflow-hidden"
+            <div className="w-full mt-8 overflow-hidden"
               style={{ aspectRatio: "16/9" }}>
               <iframe
                 src={`https://www.youtube.com/embed/${getYouTubeId(post.youtubeUrl)}`}
@@ -112,15 +121,6 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
               />
             </div>
           )}
-
-          {/* Body */}
-          <div className="space-y-4">
-            {post.body.split("\n\n").map((para, i) => (
-              <p key={i} className="text-silver/70 text-sm leading-relaxed">
-                {para}
-              </p>
-            ))}
-          </div>
 
           {/* Close */}
           <div className="mt-10 flex justify-end">
