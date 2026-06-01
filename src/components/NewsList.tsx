@@ -35,38 +35,57 @@ function formatDate(dateStr: string) {
   });
 }
 
-// Renders text with clickable, highlighted hashtags
-function RenderBody({
-  text,
-  onHashtag,
-}: {
-  text: string;
-  onHashtag?: (tag: string) => void;
-}) {
+// Extract hashtags from body text
+function extractHashtags(text: string): string[] {
+  const matches = text.match(/#[\w]+/g) ?? [];
+  return [...new Set(matches.map((t) => t.toLowerCase()))];
+}
+
+// Body text without hashtag lines
+function RenderBody({ text }: { text: string }) {
+  const cleanParas = text
+    .split("\n\n")
+    .filter((para) => !/^(#[\w]+\s*)+$/.test(para.trim()));
   return (
     <>
-      {text.split("\n\n").map((para, i) => (
+      {cleanParas.map((para, i) => (
         <p key={i} className="text-silver/70 text-sm leading-relaxed">
-          {para.split(/(\#[\w]+)/g).map((part, j) =>
-            part.startsWith("#") ? (
-              <button
-                key={j}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onHashtag?.(part.toLowerCase());
-                }}
-                className="transition-colors duration-200 hover:opacity-100"
-                style={{ color: "rgba(79,195,247,0.75)" }}
-              >
-                {part}
-              </button>
-            ) : (
-              <span key={j}>{part}</span>
-            )
-          )}
+          {para}
         </p>
       ))}
     </>
+  );
+}
+
+// Hashtag pill badges
+function HashtagPills({
+  tags,
+  onHashtag,
+}: {
+  tags: string[];
+  onHashtag: (tag: string) => void;
+}) {
+  if (!tags.length) return null;
+  return (
+    <div className="flex flex-wrap gap-2 mt-6">
+      {tags.map((tag) => (
+        <button
+          key={tag}
+          onClick={(e) => {
+            e.stopPropagation();
+            onHashtag(tag);
+          }}
+          className="text-[10px] tracking-widest border px-3 py-1 transition-all duration-200 hover:border-glow-blue/50 hover:text-soft-white"
+          style={{
+            color: "rgba(79,195,247,0.6)",
+            borderColor: "rgba(79,195,247,0.15)",
+            letterSpacing: "0.12em",
+          }}
+        >
+          {tag}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -150,32 +169,34 @@ function PostModal({
             </div>
           )}
 
-          {/* Body with hashtags */}
+          {/* Body */}
           <div className="space-y-4">
-            <RenderBody
-              text={post.body}
-              onHashtag={(tag) => {
-                onClose();
-                onHashtag(tag);
-              }}
-            />
+            <RenderBody text={post.body} />
           </div>
 
-          {/* YouTube embed */}
-          {post.youtubeUrl && getYouTubeId(post.youtubeUrl) && (
-            <div className="w-full mt-8 overflow-hidden" style={{ aspectRatio: "16/9" }}>
-              <iframe
-                src={`https://www.youtube.com/embed/${getYouTubeId(post.youtubeUrl)}`}
-                title={post.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="w-full h-full border-0"
-              />
-            </div>
-          )}
+          {/* Hashtag pills */}
+          <HashtagPills
+            tags={extractHashtags(post.body)}
+            onHashtag={(tag) => { onClose(); onHashtag(tag); }}
+          />
 
-          {/* Close */}
-          <div className="mt-10 flex justify-end">
+          {/* Bottom row: YouTube link + Close */}
+          <div className="mt-8 flex items-center justify-between">
+            {post.youtubeUrl ? (
+              <a
+                href={post.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[10px] tracking-widest uppercase flex items-center gap-2 transition-colors duration-200"
+                style={{ color: "rgba(79,195,247,0.6)", letterSpacing: "0.2em" }}
+              >
+                Watch on YouTube
+                <svg viewBox="0 0 12 12" className="w-3 h-3 fill-none stroke-current" strokeWidth={1.5}>
+                  <path d="M2 10L10 2M10 2H5M10 2v5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            ) : <span />}
             <button
               onClick={onClose}
               className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
