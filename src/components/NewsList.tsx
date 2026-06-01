@@ -92,9 +92,13 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
           )}
 
           {/* Body */}
-          <p className="text-silver/70 text-sm leading-relaxed">
-            {post.body}
-          </p>
+          <div className="space-y-4">
+            {post.body.split("\n\n").map((para, i) => (
+              <p key={i} className="text-silver/70 text-sm leading-relaxed">
+                {para}
+              </p>
+            ))}
+          </div>
 
           {/* Close */}
           <div className="mt-10 flex justify-end">
