@@ -2,10 +2,10 @@ import { client } from "@/sanity/lib/client";
 import { newPostsQuery } from "@/sanity/lib/queries";
 import NewsList from "./NewsList";
 
-export const revalidate = 30;
+export const dynamic = "force-dynamic";
 
 export default async function NewsSection() {
-  const posts = await client.fetch(newPostsQuery).catch(() => []);
+  const posts = await client.fetch(newPostsQuery, {}, { cache: "no-store" }).catch(() => []);
 
   return (
     <section id="news" className="py-24 md:py-36 px-6 md:px-12 relative">
