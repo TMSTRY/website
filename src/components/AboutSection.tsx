@@ -75,6 +75,7 @@ type Chapter = {
   accent: string;
   placeholder?: string;
   quotes?: QuoteEntry[];
+  photo?: { src: string; caption?: string; rotate?: string };
 };
 
 const CHAPTERS: Chapter[] = [
@@ -95,6 +96,7 @@ No fixed genre. No fixed identity. Just everything that ever refused to stay qui
     index: "02",
     label: "Origins",
     accent: "#9c6aff",
+    photo: { src: "/photos/1.jpg", caption: "Behind the decks", rotate: "-2deg" },
     placeholder: `It started with four toms around a neck and a lot of noise.
 
 At 14, joining a drumband taught me something no music theory class ever could: how rhythm lives in the body before it reaches the brain. Marching, performing, feeling the beat as something physical. That was the foundation.
@@ -342,9 +344,51 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
             <>
               <div className="space-y-4">
                 {chapter.placeholder!.split("\n\n").map((para, i) => (
-                  <p key={i} className="text-silver/60 text-sm leading-relaxed">
-                    {para}
-                  </p>
+                  <>
+                    <p key={i} className="text-silver/60 text-sm leading-relaxed">
+                      {para}
+                    </p>
+                    {/* Polaroid after 2nd paragraph */}
+                    {chapter.photo && i === 1 && (
+                      <div key="polaroid" className="flex justify-center py-4">
+                        <motion.div
+                          initial={{ opacity: 0, rotate: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, rotate: chapter.photo.rotate ?? "-2deg", scale: 1 }}
+                          transition={{ delay: 0.3, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                          className="relative"
+                          style={{
+                            background: "#f0ede6",
+                            padding: "10px 10px 36px 10px",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3)",
+                            transform: `rotate(${chapter.photo.rotate ?? "-2deg"})`,
+                            maxWidth: "220px",
+                          }}
+                        >
+                          <Image
+                            src={chapter.photo.src}
+                            alt={chapter.photo.caption ?? chapter.label}
+                            width={300}
+                            height={300}
+                            className="w-full h-auto block"
+                            style={{ filter: "saturate(0.6) brightness(0.9) contrast(1.05)" }}
+                          />
+                          {chapter.photo.caption && (
+                            <p
+                              className="text-center mt-1"
+                              style={{
+                                fontFamily: "cursive",
+                                fontSize: "0.65rem",
+                                color: "#666",
+                                letterSpacing: "0.02em",
+                              }}
+                            >
+                              {chapter.photo.caption}
+                            </p>
+                          )}
+                        </motion.div>
+                      </div>
+                    )}
+                  </>
                 ))}
               </div>
               <div className="mt-10 flex items-center justify-between">
