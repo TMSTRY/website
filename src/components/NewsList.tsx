@@ -18,7 +18,15 @@ type Post = {
   date: string;
   body: string;
   image?: SanityImage;
+  youtubeUrl?: string;
 };
+
+function getYouTubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
+}
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -87,6 +95,20 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
                 height={900}
                 className="w-full h-auto block"
                 style={{ filter: "saturate(0.8) brightness(0.85)" }}
+              />
+            </div>
+          )}
+
+          {/* YouTube embed */}
+          {post.youtubeUrl && getYouTubeId(post.youtubeUrl) && (
+            <div className="w-full mb-8 overflow-hidden"
+              style={{ aspectRatio: "16/9" }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${getYouTubeId(post.youtubeUrl)}`}
+                title={post.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
               />
             </div>
           )}

@@ -47,6 +47,12 @@ export const newsPost = defineType({
       options: { hotspot: true },
     }),
     defineField({
+      name: "youtubeUrl",
+      title: "YouTube URL (optional)",
+      type: "url",
+      description: "Paste a YouTube link, e.g. https://www.youtube.com/watch?v=xxxxx",
+    }),
+    defineField({
       name: "published",
       title: "Published",
       type: "boolean",

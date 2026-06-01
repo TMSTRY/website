@@ -8,5 +8,6 @@ export const newPostsQuery = groq`
     date,
     body,
     image,
+    youtubeUrl,
   }
 `;
