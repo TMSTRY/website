@@ -422,8 +422,8 @@ export default function AboutSection() {
           <div className="grid md:grid-cols-[1fr_260px] lg:grid-cols-[1fr_300px] gap-12 md:gap-16 items-start">
 
             {/* Left — full bio text */}
-            <FadeInSection delay={0.05}>
-              <div className="space-y-5">
+            <FadeInSection delay={0.05} className="flex flex-col h-full">
+              <div className="space-y-5 flex-1">
                 {BIO.trim().split("\n\n").map((para, i) => (
                   <p key={i} className="text-silver/75 leading-relaxed text-sm md:text-base">
                     {para}
@@ -431,12 +431,15 @@ export default function AboutSection() {
                 ))}
               </div>
 
-              {/* Quote */}
-              <div className="mt-10 border-l-2 border-glow-blue/25 pl-6 py-1">
-                <blockquote className="text-soft-white/55 italic text-sm md:text-base leading-relaxed font-light">
+              {/* Quote — pushed to bottom, aligned with chapter 08 */}
+              <div className="mt-auto pt-16 border-l-2 border-glow-blue/25 pl-6 py-2">
+                <blockquote
+                  className="text-soft-white/65 italic leading-relaxed font-light"
+                  style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)" }}
+                >
                   "The machines don't dream. But they learned to wonder about the ones who do."
                 </blockquote>
-                <cite className="text-silver/25 text-[10px] tracking-widest not-italic mt-2 block" style={{ letterSpacing: "0.2em" }}>
+                <cite className="text-silver/25 text-[10px] tracking-widest not-italic mt-3 block" style={{ letterSpacing: "0.2em" }}>
                   — TMSTRY
                 </cite>
               </div>
