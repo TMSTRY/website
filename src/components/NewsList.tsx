@@ -35,7 +35,50 @@ function formatDate(dateStr: string) {
   });
 }
 
-function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
+// Renders text with clickable, highlighted hashtags
+function RenderBody({
+  text,
+  onHashtag,
+}: {
+  text: string;
+  onHashtag?: (tag: string) => void;
+}) {
+  return (
+    <>
+      {text.split("\n\n").map((para, i) => (
+        <p key={i} className="text-silver/70 text-sm leading-relaxed">
+          {para.split(/(\#[\w]+)/g).map((part, j) =>
+            part.startsWith("#") ? (
+              <button
+                key={j}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onHashtag?.(part.toLowerCase());
+                }}
+                className="transition-colors duration-200 hover:opacity-100"
+                style={{ color: "rgba(79,195,247,0.75)" }}
+              >
+                {part}
+              </button>
+            ) : (
+              <span key={j}>{part}</span>
+            )
+          )}
+        </p>
+      ))}
+    </>
+  );
+}
+
+function PostModal({
+  post,
+  onClose,
+  onHashtag,
+}: {
+  post: Post;
+  onClose: () => void;
+  onHashtag: (tag: string) => void;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -55,7 +98,8 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
         className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="absolute -inset-px pointer-events-none"
+        <div
+          className="absolute -inset-px pointer-events-none"
           style={{ background: "linear-gradient(135deg, rgba(79,195,247,0.12), transparent 60%)" }}
         />
 
@@ -64,24 +108,31 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
           {/* Header */}
           <div className="flex items-start justify-between mb-6">
             <div>
-              <span className="font-mono text-[9px] block mb-2"
-                style={{ color: "rgba(79,195,247,0.8)", letterSpacing: "0.3em" }}>
+              <span
+                className="font-mono text-[9px] block mb-2"
+                style={{ color: "rgba(79,195,247,0.8)", letterSpacing: "0.3em" }}
+              >
                 {post.tag.toUpperCase()} · {formatDate(post.date)}
               </span>
-              <h3 className="font-display font-bold text-soft-white"
-                style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)", letterSpacing: "0.04em" }}>
+              <h3
+                className="font-display font-bold text-soft-white"
+                style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)", letterSpacing: "0.04em" }}
+              >
                 {post.title}
               </h3>
             </div>
-            <button onClick={onClose}
+            <button
+              onClick={onClose}
               className="text-silver/40 hover:text-soft-white transition-colors duration-200 text-xs tracking-widest mt-1 ml-4 flex-shrink-0"
-              style={{ letterSpacing: "0.2em" }}>
+              style={{ letterSpacing: "0.2em" }}
+            >
               ESC ×
             </button>
           </div>
 
           {/* Accent line */}
-          <div className="h-px w-full mb-8"
+          <div
+            className="h-px w-full mb-8"
             style={{ background: "linear-gradient(90deg, rgba(79,195,247,0.5), transparent)" }}
           />
 
@@ -99,19 +150,20 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
             </div>
           )}
 
-          {/* Body */}
+          {/* Body with hashtags */}
           <div className="space-y-4">
-            {post.body.split("\n\n").map((para, i) => (
-              <p key={i} className="text-silver/70 text-sm leading-relaxed">
-                {para}
-              </p>
-            ))}
+            <RenderBody
+              text={post.body}
+              onHashtag={(tag) => {
+                onClose();
+                onHashtag(tag);
+              }}
+            />
           </div>
 
           {/* YouTube embed */}
           {post.youtubeUrl && getYouTubeId(post.youtubeUrl) && (
-            <div className="w-full mt-8 overflow-hidden"
-              style={{ aspectRatio: "16/9" }}>
+            <div className="w-full mt-8 overflow-hidden" style={{ aspectRatio: "16/9" }}>
               <iframe
                 src={`https://www.youtube.com/embed/${getYouTubeId(post.youtubeUrl)}`}
                 title={post.title}
@@ -124,9 +176,11 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
 
           {/* Close */}
           <div className="mt-10 flex justify-end">
-            <button onClick={onClose}
+            <button
+              onClick={onClose}
               className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
-              style={{ letterSpacing: "0.2em" }}>
+              style={{ letterSpacing: "0.2em" }}
+            >
               Close
             </button>
           </div>
@@ -138,11 +192,18 @@ function PostModal({ post, onClose }: { post: Post; onClose: () => void }) {
 
 export default function NewsList({ posts }: { posts: Post[] }) {
   const [active, setActive] = useState<Post | null>(null);
+  const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
+
+  const filtered = activeHashtag
+    ? posts.filter((p) => p.body.toLowerCase().includes(activeHashtag))
+    : posts;
 
   if (!posts.length) {
     return (
-      <p className="text-silver/20 text-[10px] tracking-widest uppercase py-12"
-        style={{ letterSpacing: "0.25em" }}>
+      <p
+        className="text-silver/20 text-[10px] tracking-widest uppercase py-12"
+        style={{ letterSpacing: "0.25em" }}
+      >
         No posts yet
       </p>
     );
@@ -150,8 +211,44 @@ export default function NewsList({ posts }: { posts: Post[] }) {
 
   return (
     <>
+      {/* Active hashtag filter indicator */}
+      <AnimatePresence>
+        {activeHashtag && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="flex items-center gap-4 mb-8"
+          >
+            <span
+              className="text-[9px] tracking-widest uppercase"
+              style={{ color: "rgba(79,195,247,0.6)", letterSpacing: "0.3em" }}
+            >
+              Filtered by
+            </span>
+            <span
+              className="text-[10px] font-mono px-3 py-1 border"
+              style={{
+                color: "rgba(79,195,247,0.9)",
+                borderColor: "rgba(79,195,247,0.2)",
+                letterSpacing: "0.1em",
+              }}
+            >
+              {activeHashtag}
+            </span>
+            <button
+              onClick={() => setActiveHashtag(null)}
+              className="text-[9px] tracking-widest uppercase text-silver/30 hover:text-soft-white transition-colors duration-200"
+              style={{ letterSpacing: "0.25em" }}
+            >
+              Clear ×
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col gap-px">
-        {posts.map((post, i) => (
+        {filtered.map((post, i) => (
           <FadeInSection key={post._id} delay={i * 0.08}>
             <motion.article
               onClick={() => setActive(post)}
@@ -163,12 +260,16 @@ export default function NewsList({ posts }: { posts: Post[] }) {
 
               {/* Date & tag */}
               <div className="flex md:flex-col gap-3 md:gap-2 pt-1">
-                <span className="text-[9px] tracking-widest uppercase"
-                  style={{ letterSpacing: "0.3em", color: "rgba(79,195,247,0.6)" }}>
+                <span
+                  className="text-[9px] tracking-widest uppercase"
+                  style={{ letterSpacing: "0.3em", color: "rgba(79,195,247,0.6)" }}
+                >
                   {post.tag}
                 </span>
-                <span className="text-[10px] tracking-widest text-silver/30 uppercase"
-                  style={{ letterSpacing: "0.2em" }}>
+                <span
+                  className="text-[10px] tracking-widest text-silver/30 uppercase"
+                  style={{ letterSpacing: "0.2em" }}
+                >
                   {formatDate(post.date)}
                 </span>
               </div>
@@ -176,12 +277,16 @@ export default function NewsList({ posts }: { posts: Post[] }) {
               {/* Content */}
               <div className="flex gap-6 items-start">
                 <div className="flex-1">
-                  <h3 className="font-display font-semibold text-soft-white mb-3 group-hover:text-white transition-colors duration-300"
-                    style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", letterSpacing: "0.02em" }}>
+                  <h3
+                    className="font-display font-semibold text-soft-white mb-3 group-hover:text-white transition-colors duration-300"
+                    style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", letterSpacing: "0.02em" }}
+                  >
                     {post.title}
                   </h3>
-                  <p className="text-silver/50 text-sm leading-relaxed line-clamp-2"
-                    style={{ letterSpacing: "0.02em" }}>
+                  <p
+                    className="text-silver/50 text-sm leading-relaxed line-clamp-2"
+                    style={{ letterSpacing: "0.02em" }}
+                  >
                     {post.body}
                   </p>
                 </div>
@@ -207,7 +312,16 @@ export default function NewsList({ posts }: { posts: Post[] }) {
       </div>
 
       <AnimatePresence>
-        {active && <PostModal post={active} onClose={() => setActive(null)} />}
+        {active && (
+          <PostModal
+            post={active}
+            onClose={() => setActive(null)}
+            onHashtag={(tag) => {
+              setActive(null);
+              setActiveHashtag(tag);
+            }}
+          />
+        )}
       </AnimatePresence>
     </>
   );
