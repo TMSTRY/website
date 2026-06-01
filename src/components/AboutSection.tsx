@@ -348,12 +348,7 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
                 ))}
               </div>
               <div className="mt-10 flex items-center justify-between">
-                <span
-                  className="text-[9px] tracking-widest uppercase"
-                  style={{ color: `${chapter.accent}60`, letterSpacing: "0.3em" }}
-                >
-                  Placeholder — edit in code
-                </span>
+                <span />
                 <button
                   onClick={onClose}
                   className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
