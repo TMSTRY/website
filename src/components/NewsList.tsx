@@ -180,6 +180,19 @@ function PostModal({
             onHashtag={(tag) => { onClose(); onHashtag(tag); }}
           />
 
+          {/* YouTube embed */}
+          {post.youtubeUrl && getYouTubeId(post.youtubeUrl) && (
+            <div className="w-full mt-8 overflow-hidden" style={{ aspectRatio: "16/9" }}>
+              <iframe
+                src={`https://www.youtube.com/embed/${getYouTubeId(post.youtubeUrl)}`}
+                title={post.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full border-0"
+              />
+            </div>
+          )}
+
           {/* Bottom row: YouTube link + Close */}
           <div className="mt-8 flex items-center justify-between">
             {post.youtubeUrl ? (
