@@ -46,17 +46,19 @@ export default function MusicSection() {
 
             {/* Logo */}
             <div className="relative w-full aspect-square max-w-[260px]">
+              {/* Dark bg so logo is visible in both light and dark mode */}
+              <div className="absolute inset-0 rounded-full bg-obsidian" style={{ opacity: 0.85 }} />
               <Image
                 src="/circle-logo.png"
                 alt="TMSTRY"
                 fill
                 quality={90}
-                className="object-contain"
+                className="object-contain relative z-10"
                 style={{ mixBlendMode: "screen" }}
               />
               <motion.div
                 className="absolute inset-0 -z-10 blur-3xl scale-110"
-                style={{ background: "radial-gradient(circle, rgba(156,106,255,0.15) 0%, rgba(79,195,247,0.07) 60%, transparent 100%)" }}
+                style={{ background: "radial-gradient(circle, rgba(156,106,255,0.2) 0%, rgba(79,195,247,0.1) 60%, transparent 100%)" }}
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
               />
@@ -122,7 +124,7 @@ export default function MusicSection() {
                 <iframe
                   src="https://open.spotify.com/embed/artist/6N2jkKJIcbzHwMs4cswMpw?utm_source=generator&theme=0"
                   width="100%"
-                  height="240"
+                  height="352"
                   frameBorder="0"
                   allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                   loading="lazy"
