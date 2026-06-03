@@ -7,12 +7,27 @@ import FadeInSection from "./FadeInSection";
 
 const photos = [
   { src: "/photos/artistiek.png", alt: "TMSTRY — Artistic", label: "Editorial" },
-  { src: "/photos/studio.png",    alt: "TMSTRY — Studio",   label: "Studio" },
-  { src: "/photos/tunnel.png",    alt: "TMSTRY — Tunnel",   label: "Location" },
+  { src: "/photos/studio.png",    alt: "TMSTRY — Studio",   label: "Studio"    },
+  { src: "/photos/tunnel.png",    alt: "TMSTRY — Tunnel",   label: "Location"  },
   { src: "/photos/studio-2.png",  alt: "TMSTRY — Studio II",label: "Studio II" },
   { src: "/photos/platen.png",    alt: "TMSTRY — Records",  label: "The Craft" },
 ];
 
+// How each slot looks relative to center (offset = i - current)
+const SLOT = {
+  0:  { x: "0%",    scale: 1,    blur: 0,  opacity: 1,    zIndex: 10, brightness: 1    },
+  1:  { x: "62%",   scale: 0.78, blur: 3,  opacity: 0.65, zIndex: 7,  brightness: 0.7  },
+  "-1":{ x: "-62%", scale: 0.78, blur: 3,  opacity: 0.65, zIndex: 7,  brightness: 0.7  },
+  2:  { x: "105%",  scale: 0.60, blur: 6,  opacity: 0.35, zIndex: 4,  brightness: 0.5  },
+  "-2":{ x: "-105%",scale: 0.60, blur: 6,  opacity: 0.35, zIndex: 4,  brightness: 0.5  },
+} as const;
+
+function getSlot(offset: number) {
+  const key = Math.max(-2, Math.min(2, offset)).toString();
+  return SLOT[key as keyof typeof SLOT] ?? { x: "0%", scale: 0, blur: 8, opacity: 0, zIndex: 0, brightness: 0 };
+}
+
+// ── Lightbox ──────────────────────────────────────────────────────────────────
 function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
   return (
     <motion.div
@@ -28,7 +43,7 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.93, opacity: 0 }}
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="relative max-w-5xl w-full"
+        className="relative max-w-4xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -52,86 +67,159 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
   );
 }
 
+// ── Section ───────────────────────────────────────────────────────────────────
 export default function PressSection() {
+  const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const [dragStart, setDragStart] = useState(0);
+
+  const navigate = (dir: number) => {
+    setCurrent((c) => Math.max(0, Math.min(photos.length - 1, c + dir)));
+  };
 
   return (
     <>
-      <section id="press" className="py-24 md:py-36 px-6 md:px-12 relative">
+      <section id="press" className="py-24 md:py-36 relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{ background: "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(79,195,247,0.02) 0%, transparent 65%)" }}
         />
 
-        <div className="max-w-7xl mx-auto relative">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 relative">
 
           {/* Header */}
           <FadeInSection className="mb-16 md:mb-20">
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="h-px w-8" style={{ background: "rgba(200,169,110,0.4)" }} />
-                  <span className="text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.4em", color: "rgba(200,169,110,0.8)" }}>
-                    Press & Photos
-                  </span>
-                </div>
-                <h2 className="font-display font-bold text-soft-white" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", letterSpacing: "0.04em" }}>
-                  The Frame
-                </h2>
-              </div>
-              <p className="text-silver/30 text-[10px] tracking-widest uppercase self-end pb-1" style={{ letterSpacing: "0.2em" }}>
-                Click to enlarge
-              </p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="h-px w-8" style={{ background: "rgba(200,169,110,0.4)" }} />
+              <span className="text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.4em", color: "rgba(200,169,110,0.8)" }}>
+                Press &amp; Photos
+              </span>
             </div>
+            <h2 className="font-display font-bold text-soft-white" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", letterSpacing: "0.04em" }}>
+              The Frame
+            </h2>
           </FadeInSection>
 
-          {/* Masonry-style columns — photos shown at natural height, no cropping */}
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-            {photos.map((photo, i) => (
-              <FadeInSection key={photo.src} delay={i * 0.07} className="break-inside-avoid">
-                <motion.button
-                  onClick={() => setLightbox({ src: photo.src, alt: photo.alt })}
-                  className="group relative w-full overflow-hidden block"
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  {/* Natural aspect ratio — no cropping */}
-                  <Image
-                    src={photo.src}
-                    alt={photo.alt}
-                    width={800}
-                    height={800}
-                    quality={85}
-                    className="w-full h-auto block"
-                    style={{ filter: "saturate(0.75) brightness(0.82)" }}
-                  />
+          {/* Carousel */}
+          <FadeInSection delay={0.1}>
+            <div
+              className="relative flex items-center justify-center select-none"
+              style={{ height: "clamp(320px, 45vw, 560px)" }}
+            >
+              {photos.map((photo, i) => {
+                const offset = i - current;
+                const slot = getSlot(offset);
+                const isCenter = offset === 0;
+                const isVisible = Math.abs(offset) <= 2;
 
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/25 transition-colors duration-500" />
+                if (!isVisible) return null;
 
-                  {/* Label — slides up on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                    <div className="h-px w-full mb-2" style={{ background: "linear-gradient(90deg, rgba(79,195,247,0.5), transparent)" }} />
-                    <p className="text-silver/70 text-[9px] tracking-widest uppercase text-left" style={{ letterSpacing: "0.3em" }}>
-                      {photo.label}
-                    </p>
-                  </div>
+                return (
+                  <motion.div
+                    key={photo.src}
+                    className="absolute"
+                    style={{
+                      width: "clamp(220px, 30vw, 400px)",
+                      aspectRatio: "1 / 1",
+                      zIndex: slot.zIndex,
+                      cursor: isCenter ? "zoom-in" : "pointer",
+                    }}
+                    animate={{
+                      x: slot.x,
+                      scale: slot.scale,
+                      opacity: slot.opacity,
+                      filter: `blur(${slot.blur}px) brightness(${slot.brightness})`,
+                    }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    whileHover={isCenter ? { scale: 1.04 } : {}}
+                    drag={isCenter ? "x" : false}
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.1}
+                    onDragStart={(_, info) => setDragStart(info.point.x)}
+                    onDragEnd={(_, info) => {
+                      if (info.offset.x < -40) navigate(1);
+                      else if (info.offset.x > 40) navigate(-1);
+                    }}
+                    onClick={() => {
+                      if (isCenter) {
+                        setLightbox({ src: photo.src, alt: photo.alt });
+                      } else {
+                        navigate(offset > 0 ? 1 : -1);
+                      }
+                    }}
+                  >
+                    {/* Photo — uniform square crop */}
+                    <div className="relative w-full h-full overflow-hidden">
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        fill
+                        quality={90}
+                        className="object-cover"
+                        style={{ filter: "saturate(0.8)" }}
+                        draggable={false}
+                      />
 
-                  {/* Fullscreen icon */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-7 h-7 border border-white/20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                      <svg viewBox="0 0 24 24" className="w-3 h-3 fill-none stroke-white/60" strokeWidth={1.5}>
-                        <path d="M15 3h6m0 0v6m0-6l-7 7M9 21H3m0 0v-6m0 6l7-7" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      {/* Hover overlay — center only */}
+                      {isCenter && (
+                        <div className="absolute inset-0 bg-obsidian/0 hover:bg-obsidian/20 transition-colors duration-500" />
+                      )}
+
+                      {/* Label — slides up on hover, center only */}
+                      {isCenter && (
+                        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 hover:opacity-100 hover:translate-y-0 transition-all duration-300">
+                          <div className="h-px w-full mb-2" style={{ background: "linear-gradient(90deg, rgba(79,195,247,0.5), transparent)" }} />
+                          <p className="text-silver/70 text-[9px] tracking-widest uppercase" style={{ letterSpacing: "0.3em" }}>
+                            {photo.label}
+                          </p>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  </motion.div>
+                );
+              })}
+            </div>
 
-                  {/* Border glow */}
-                  <div className="absolute inset-0 border border-transparent group-hover:border-white/10 transition-colors duration-500" />
-                </motion.button>
-              </FadeInSection>
-            ))}
-          </div>
+            {/* Navigation dots */}
+            <div className="flex items-center justify-center gap-3 mt-10">
+              {photos.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrent(i)}
+                  className="transition-all duration-300"
+                  style={{
+                    width: i === current ? "24px" : "6px",
+                    height: "6px",
+                    background: i === current ? "rgba(79,195,247,0.8)" : "rgba(255,255,255,0.15)",
+                    borderRadius: "3px",
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Arrow hints */}
+            <div className="flex items-center justify-center gap-8 mt-6">
+              <button
+                onClick={() => navigate(-1)}
+                disabled={current === 0}
+                className="text-silver/20 hover:text-silver/60 disabled:opacity-10 transition-colors duration-200 text-xs tracking-widest"
+                style={{ letterSpacing: "0.2em" }}
+              >
+                ← prev
+              </button>
+              <span className="text-silver/15 text-[9px] tracking-widest" style={{ letterSpacing: "0.3em" }}>
+                {current + 1} / {photos.length}
+              </span>
+              <button
+                onClick={() => navigate(1)}
+                disabled={current === photos.length - 1}
+                className="text-silver/20 hover:text-silver/60 disabled:opacity-10 transition-colors duration-200 text-xs tracking-widest"
+                style={{ letterSpacing: "0.2em" }}
+              >
+                next →
+              </button>
+            </div>
+          </FadeInSection>
 
         </div>
       </section>
