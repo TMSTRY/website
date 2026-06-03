@@ -44,23 +44,20 @@ export default function MusicSection() {
           {/* ── Left: Artist identity ── */}
           <FadeInSection delay={0.05} className="flex flex-col gap-10">
 
-            {/* Logo */}
-            <div className="relative w-full aspect-square max-w-[260px]">
-              {/* Dark bg so logo is visible in both light and dark mode */}
-              <div className="absolute inset-0 rounded-full bg-obsidian" style={{ opacity: 0.85 }} />
+            {/* Artist image */}
+            <div className="relative w-full aspect-square max-w-[280px] overflow-hidden border border-white/[0.08]">
               <Image
-                src="/circle-logo.png"
+                src="/primary logo.png"
                 alt="TMSTRY"
                 fill
                 quality={90}
-                className="object-contain relative z-10"
-                style={{ mixBlendMode: "screen" }}
+                className="object-cover"
               />
               <motion.div
-                className="absolute inset-0 -z-10 blur-3xl scale-110"
-                style={{ background: "radial-gradient(circle, rgba(156,106,255,0.2) 0%, rgba(79,195,247,0.1) 60%, transparent 100%)" }}
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 blur-2xl -z-10"
+                style={{ background: "radial-gradient(ellipse, rgba(156,106,255,0.25) 0%, transparent 70%)" }}
+                animate={{ opacity: [0.4, 0.9, 0.4] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
             </div>
 
