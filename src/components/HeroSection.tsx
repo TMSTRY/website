@@ -117,9 +117,14 @@ export default function HeroSection() {
         <motion.h1
           ref={glitchRef as React.RefObject<HTMLHeadingElement>}
           data-text="TMSTRY"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.4, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          variants={{
+            hidden:  { opacity: 0, y: 30 },
+            visible: { opacity: 1, y: 0,   transition: { duration: 1.4, delay: 0.7, ease: [0.16, 1, 0.3, 1] as const } },
+            hovered: { opacity: 0.05, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
+          }}
+          initial="hidden"
+          animate="visible"
+          whileHover="hovered"
           className="glitch-text font-display font-black text-soft-white leading-none mb-6 relative select-none"
           style={{
             fontSize: "clamp(3.5rem, 16vw, 12rem)",
