@@ -135,14 +135,21 @@ export default function SignalRoom() {
     >
       {/* ── Room scene ── */}
       <div className="absolute inset-0">
+        {/* dark fallback behind the still */}
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 90% 70% at 50% 35%, #10131a 0%, #080a0e 55%, #050608 100%)" }} />
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/signal-room.jpg')", opacity: 0.5, mixBlendMode: "luminosity" }} />
-        <div className="absolute inset-0 hidden md:block pointer-events-none">
-          <motion.div className="absolute rounded-full blur-[120px]" style={{ width: 520, height: 520, left: "18%", top: "55%", background: "radial-gradient(circle, rgba(79,195,247,0.16), transparent 70%)" }} animate={{ opacity: [0.5, 0.9, 0.5] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }} />
-          <motion.div className="absolute rounded-full blur-[130px]" style={{ width: 600, height: 600, right: "10%", top: "20%", background: "radial-gradient(circle, rgba(224,64,251,0.12), transparent 70%)" }} animate={{ opacity: [0.4, 0.75, 0.4] }} transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }} />
+        {/* photoreal still */}
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/signal-room.webp')" }} />
+        {/* subtle breathing signal glows (additive, never muddy the image) */}
+        <div className="absolute inset-0 hidden md:block pointer-events-none" style={{ mixBlendMode: "screen" }}>
+          <motion.div className="absolute rounded-full blur-[120px]" style={{ width: 460, height: 460, left: "16%", top: "52%", background: "radial-gradient(circle, rgba(79,195,247,0.10), transparent 70%)" }} animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }} />
+          <motion.div className="absolute rounded-full blur-[130px]" style={{ width: 560, height: 560, right: "10%", top: "22%", background: "radial-gradient(circle, rgba(224,64,251,0.08), transparent 70%)" }} animate={{ opacity: [0.25, 0.5, 0.25] }} transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }} />
         </div>
-        <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 220px rgba(0,0,0,0.9)" }} />
-        <div className="absolute inset-0 crt-scanlines opacity-[0.15] pointer-events-none" />
+        {/* contrast scrims: top (HUD), bottom (controls), left (channel rail) */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(5,6,8,0.7) 0%, transparent 20%, transparent 72%, rgba(5,6,8,0.55) 100%)" }} />
+        <div className="absolute inset-y-0 left-0 w-[360px] pointer-events-none hidden md:block" style={{ background: "linear-gradient(to right, rgba(5,6,8,0.6), transparent)" }} />
+        {/* vignette + faint scanlines */}
+        <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 220px rgba(0,0,0,0.8)" }} />
+        <div className="absolute inset-0 crt-scanlines opacity-[0.1] pointer-events-none" />
       </div>
 
       {/* ── HUD: title + close ── */}
