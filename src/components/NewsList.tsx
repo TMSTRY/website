@@ -428,31 +428,55 @@ export default function NewsList({ posts }: { posts: Post[] }) {
           <FadeInSection key={post._id} delay={i * 0.08}>
             <motion.article
               onClick={() => setActive(post)}
-              className="group relative border-t border-white/[0.06] py-8 md:py-10 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 md:gap-12 cursor-pointer"
+              className="group relative border-t border-white/[0.06] py-8 md:py-10 cursor-pointer overflow-hidden min-h-[132px] md:min-h-[164px]"
               whileHover={{ x: 4 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="absolute left-0 top-0 bottom-0 w-px bg-glow-blue scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top" />
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-glow-blue scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top z-20" />
 
-              {/* Date & tag */}
-              <div className="flex md:flex-col gap-3 md:gap-2 pt-1">
-                <span
-                  className="text-[9px] tracking-widest uppercase"
-                  style={{ letterSpacing: "0.3em", color: "rgba(79,195,247,0.6)" }}
-                >
-                  {post.tag}
-                </span>
-                <span
-                  className="text-[10px] tracking-widest text-silver/30 uppercase"
-                  style={{ letterSpacing: "0.2em" }}
-                >
-                  {formatDate(post.date)}
-                </span>
-              </div>
+              {/* Cinematic poster panel — full row height, bleeds into the page */}
+              {post.image?.asset && (
+                <div className="absolute right-0 top-0 bottom-0 w-[55%] sm:w-1/2 md:w-[44%] pointer-events-none overflow-hidden">
+                  <Image
+                    src={urlFor(post.image).width(640).height(800).fit("crop").url()}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 55vw, 44vw"
+                    className="object-cover object-center grayscale opacity-45 scale-[1.03] transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-100"
+                  />
+                  {/* horizontal fade into the page background (theme-aware) */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: "linear-gradient(90deg, rgb(var(--c-bg)) 2%, rgb(var(--c-bg) / 0.72) 34%, rgb(var(--c-bg) / 0) 82%)" }}
+                  />
+                  {/* soft top/bottom letterbox into the background */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: "linear-gradient(0deg, rgb(var(--c-bg)) 0%, rgb(var(--c-bg) / 0) 22%, rgb(var(--c-bg) / 0) 78%, rgb(var(--c-bg)) 100%)" }}
+                  />
+                </div>
+              )}
 
-              {/* Content */}
-              <div className="flex gap-6 items-start">
-                <div className="flex-1">
+              {/* Content — above the poster */}
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-3 md:gap-12">
+                {/* Date & tag */}
+                <div className="flex md:flex-col gap-3 md:gap-2 pt-1">
+                  <span
+                    className="text-[9px] tracking-widest uppercase"
+                    style={{ letterSpacing: "0.3em", color: "rgba(79,195,247,0.6)" }}
+                  >
+                    {post.tag}
+                  </span>
+                  <span
+                    className="text-[10px] tracking-widest text-silver/30 uppercase"
+                    style={{ letterSpacing: "0.2em" }}
+                  >
+                    {formatDate(post.date)}
+                  </span>
+                </div>
+
+                {/* Text */}
+                <div className="pr-[42%] sm:pr-[38%] md:pr-[40%]">
                   <h3
                     className="font-display font-semibold text-soft-white mb-3 group-hover:text-white transition-colors duration-300"
                     style={{ fontSize: "clamp(1.1rem, 2.5vw, 1.5rem)", letterSpacing: "0.02em" }}
@@ -474,19 +498,6 @@ export default function NewsList({ posts }: { posts: Post[] }) {
                     </div>
                   )}
                 </div>
-
-                {/* Thumbnail */}
-                {post.image?.asset && (
-                  <div className="flex-shrink-0 relative w-16 h-16 md:w-20 md:h-20 overflow-hidden opacity-60 group-hover:opacity-90 transition-opacity duration-300">
-                    <Image
-                      src={urlFor(post.image).width(120).url()}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      style={{ filter: "saturate(0.7)" }}
-                    />
-                  </div>
-                )}
               </div>
             </motion.article>
           </FadeInSection>
