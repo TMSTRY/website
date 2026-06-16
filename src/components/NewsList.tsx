@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
@@ -366,13 +367,30 @@ function PostModal({
   );
 }
 
-export default function NewsList({ posts }: { posts: Post[] }) {
+export default function NewsList({
+  posts,
+  viewAllHref,
+  pageSize,
+}: {
+  posts: Post[];
+  viewAllHref?: string;
+  pageSize?: number;
+}) {
   const [active, setActive] = useState<Post | null>(null);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(pageSize ?? Infinity);
 
   const filtered = activeHashtag
     ? posts.filter((p) => bodyToPlainText(p.body).toLowerCase().includes(activeHashtag))
     : posts;
+
+  const shown = pageSize ? filtered.slice(0, visibleCount) : filtered;
+  const hasMore = pageSize ? filtered.length > shown.length : false;
+
+  // Reset paging when the filter changes
+  useEffect(() => {
+    setVisibleCount(pageSize ?? Infinity);
+  }, [activeHashtag, pageSize]);
 
   if (!posts.length) {
     return (
@@ -424,7 +442,7 @@ export default function NewsList({ posts }: { posts: Post[] }) {
       </AnimatePresence>
 
       <div className="flex flex-col gap-px">
-        {filtered.map((post, i) => (
+        {shown.map((post, i) => (
           <FadeInSection key={post._id} delay={i * 0.08}>
             <motion.article
               onClick={() => setActive(post)}
@@ -504,6 +522,35 @@ export default function NewsList({ posts }: { posts: Post[] }) {
 
         <div className="border-t border-white/[0.06]" />
       </div>
+
+      {/* Load more (archive) */}
+      {hasMore && (
+        <div className="mt-10 flex justify-center">
+          <button
+            onClick={() => setVisibleCount((c) => c + (pageSize ?? 6))}
+            className="text-[10px] tracking-widest uppercase border border-white/10 px-6 py-3 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
+            style={{ letterSpacing: "0.25em" }}
+          >
+            Load more
+          </button>
+        </div>
+      )}
+
+      {/* View all (homepage) */}
+      {viewAllHref && (
+        <div className="mt-10 flex justify-center">
+          <Link
+            href={viewAllHref}
+            className="group inline-flex items-center gap-3 text-silver/50 hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300"
+            style={{ letterSpacing: "0.25em" }}
+          >
+            View all news
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5 fill-none stroke-current text-glow-blue/60 group-hover:text-glow-blue transition-colors" strokeWidth={1.5}>
+              <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+        </div>
+      )}
 
       <AnimatePresence>
         {active && (

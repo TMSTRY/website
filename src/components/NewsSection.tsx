@@ -1,13 +1,18 @@
 import { client } from "@/sanity/lib/client";
-import { newPostsQuery } from "@/sanity/lib/queries";
+import { latestPostsQuery, postsCountQuery } from "@/sanity/lib/queries";
 import NewsList from "./NewsList";
 
 export default async function NewsSection() {
   // Tag-based ISR: the homepage is statically rendered / edge-cached and only
   // rebuilt when the Sanity webhook hits /api/revalidate (revalidateTag).
-  const posts = await client
-    .fetch(newPostsQuery, {}, { next: { tags: ["newsPost"] } })
-    .catch(() => []);
+  const [posts, total] = await Promise.all([
+    client
+      .fetch(latestPostsQuery, {}, { next: { tags: ["newsPost"] } })
+      .catch(() => []),
+    client
+      .fetch<number>(postsCountQuery, {}, { next: { tags: ["newsPost"] } })
+      .catch(() => 0),
+  ]);
 
   return (
     <section id="news" className="py-24 md:py-36 px-6 md:px-12 relative">
@@ -39,7 +44,7 @@ export default async function NewsSection() {
           </h2>
         </div>
 
-        <NewsList posts={posts} />
+        <NewsList posts={posts} viewAllHref={total > posts.length ? "/news" : undefined} />
 
       </div>
     </section>

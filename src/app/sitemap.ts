@@ -9,6 +9,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://tmstry.com/news",
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    },
+    {
       url: "https://tmstry.com/privacy",
       lastModified: new Date(),
       changeFrequency: "yearly",
