@@ -6,6 +6,7 @@ import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
+import Comments from "./Comments";
 import { useModalChrome } from "@/hooks/useModalChrome";
 import { urlFor } from "@/sanity/lib/image";
 
@@ -356,6 +357,9 @@ function PostModal({
               Close
             </button>
           </div>
+
+          {/* Comments */}
+          <Comments postId={post._id} />
         </div>
       </motion.div>
     </motion.div>
