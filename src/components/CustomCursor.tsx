@@ -11,6 +11,10 @@ export default function CustomCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
+    // Hide the system cursor only while this component is mounted (homepage),
+    // so /studio and other routes keep their normal cursor.
+    document.body.classList.add("cursor-none");
+
     let mouseX = 0;
     let mouseY = 0;
     let ringX = 0;
@@ -57,6 +61,7 @@ export default function CustomCursor() {
     raf = requestAnimationFrame(animate);
 
     return () => {
+      document.body.classList.remove("cursor-none");
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseover", onMouseOver);
       document.removeEventListener("mouseout", onMouseOut);

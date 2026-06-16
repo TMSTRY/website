@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       name,
       message,
       post: { _type: "reference", _ref: postId },
-      approved: false,
+      approved: true, // no moderation — visible immediately (untick in Studio to hide)
       createdAt: new Date().toISOString(),
     });
 

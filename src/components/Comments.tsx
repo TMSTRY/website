@@ -49,17 +49,25 @@ export default function Comments({ postId }: { postId: string }) {
     if (status === "sending") return;
     if (!name.trim() || !message.trim()) return;
 
+    const trimmedName = name.trim();
+    const trimmedMessage = message.trim();
+
     setStatus("sending");
     try {
       const res = await fetch("/api/comment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId, name: name.trim(), message: message.trim(), hp }),
+        body: JSON.stringify({ postId, name: trimmedName, message: trimmedMessage, hp }),
       });
       if (!res.ok) throw new Error("submit failed");
-      setStatus("sent");
+      // No moderation — show the comment right away
+      setComments((cur) => [
+        ...cur,
+        { _id: `temp-${Date.now()}`, name: trimmedName, message: trimmedMessage, createdAt: new Date().toISOString() },
+      ]);
       setName("");
       setMessage("");
+      setStatus("sent");
     } catch {
       setStatus("error");
     }
@@ -81,7 +89,7 @@ export default function Comments({ postId }: { postId: string }) {
       {loading ? (
         <p className="text-silver/30 text-xs">Loading…</p>
       ) : comments.length === 0 ? (
-        <p className="text-silver/30 text-xs mb-8">No comments yet. Be the first.</p>
+        <p className="text-silver/30 text-xs mb-8">No comments yet. Be the first to say something you might regret.</p>
       ) : (
         <ul className="space-y-5 mb-8">
           {comments.map((c) => (
@@ -99,12 +107,7 @@ export default function Comments({ postId }: { postId: string }) {
       )}
 
       {/* Form */}
-      {status === "sent" ? (
-        <div className="border border-glow-blue/20 bg-glow-blue/[0.04] px-4 py-4">
-          <p className="text-glow-blue/80 text-sm">Thanks! Your comment has been submitted and will appear once approved.</p>
-        </div>
-      ) : (
-        <form onSubmit={submit} className="space-y-3" onClick={(e) => e.stopPropagation()}>
+      <form onSubmit={submit} className="space-y-3" onClick={(e) => e.stopPropagation()}>
           <input
             type="text"
             value={name}
@@ -116,7 +119,7 @@ export default function Comments({ postId }: { postId: string }) {
           />
           <textarea
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => { setMessage(e.target.value); if (status === "sent") setStatus("idle"); }}
             placeholder="Your comment…"
             maxLength={2000}
             required
@@ -142,15 +145,17 @@ export default function Comments({ postId }: { postId: string }) {
             >
               {status === "sending" ? "Sending…" : "Post comment"}
             </button>
+            {status === "sent" && (
+              <span className="text-glow-blue/80 text-xs">Posted. Loud and clear.</span>
+            )}
             {status === "error" && (
               <span className="text-glow-pink/80 text-xs">Something went wrong. Please try again.</span>
             )}
           </div>
           <p className="text-silver/20 text-[10px] leading-relaxed">
-            Comments are moderated and appear only after approval.
+            I&apos;m not built to behave and neither should you!
           </p>
-        </form>
-      )}
+      </form>
     </div>
   );
 }

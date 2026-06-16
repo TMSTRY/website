@@ -85,10 +85,11 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Hide the system cursor only where the custom cursor actually renders
-   (md+ with a fine pointer) — otherwise mouse users get no cursor at all */
+/* Hide the system cursor only where the custom cursor actually renders.
+   The CustomCursor component adds .cursor-none to <body> on mount, so this
+   never applies on routes without it (e.g. /studio, /privacy, /terms). */
 @media (min-width: 768px) and (pointer: fine) {
-  body {
+  body.cursor-none {
     cursor: none;
   }
 }
