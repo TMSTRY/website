@@ -31,7 +31,7 @@ export const comment = defineType({
       name: "approved",
       title: "Approved",
       type: "boolean",
-      description: "Vink aan om de reactie zichtbaar te maken op de site.",
+      description: "Tick to make this comment visible on the site.",
       initialValue: false,
     }),
     defineField({
@@ -52,7 +52,7 @@ export const comment = defineType({
     select: { title: "name", subtitle: "message", approved: "approved" },
     prepare({ title, subtitle, approved }) {
       return {
-        title: `${approved ? "✓" : "⏳"} ${title ?? "Anoniem"}`,
+        title: `${approved ? "✓" : "⏳"} ${title ?? "Anonymous"}`,
         subtitle,
       };
     },

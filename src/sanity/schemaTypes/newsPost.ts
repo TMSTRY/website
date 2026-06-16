@@ -100,7 +100,7 @@ export const newsPost = defineType({
       type: "number",
       initialValue: 0,
       readOnly: true,
-      description: "Automatisch bijgehouden door de site — niet handmatig bewerken.",
+      description: "Tracked automatically by the site — do not edit manually.",
     }),
   ],
   orderings: [

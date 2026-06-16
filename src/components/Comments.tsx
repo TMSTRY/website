@@ -74,14 +74,14 @@ export default function Comments({ postId }: { postId: string }) {
         className="font-mono text-[10px] uppercase mb-6"
         style={{ color: "rgba(79,195,247,0.8)", letterSpacing: "0.3em" }}
       >
-        Reacties{comments.length > 0 ? ` · ${comments.length}` : ""}
+        Comments{comments.length > 0 ? ` · ${comments.length}` : ""}
       </p>
 
       {/* Existing comments */}
       {loading ? (
-        <p className="text-silver/30 text-xs">Laden…</p>
+        <p className="text-silver/30 text-xs">Loading…</p>
       ) : comments.length === 0 ? (
-        <p className="text-silver/30 text-xs mb-8">Nog geen reacties. Wees de eerste.</p>
+        <p className="text-silver/30 text-xs mb-8">No comments yet. Be the first.</p>
       ) : (
         <ul className="space-y-5 mb-8">
           {comments.map((c) => (
@@ -101,7 +101,7 @@ export default function Comments({ postId }: { postId: string }) {
       {/* Form */}
       {status === "sent" ? (
         <div className="border border-glow-blue/20 bg-glow-blue/[0.04] px-4 py-4">
-          <p className="text-glow-blue/80 text-sm">Bedankt! Je reactie is verstuurd en verschijnt zodra ze is goedgekeurd.</p>
+          <p className="text-glow-blue/80 text-sm">Thanks! Your comment has been submitted and will appear once approved.</p>
         </div>
       ) : (
         <form onSubmit={submit} className="space-y-3" onClick={(e) => e.stopPropagation()}>
@@ -109,7 +109,7 @@ export default function Comments({ postId }: { postId: string }) {
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Je naam"
+            placeholder="Your name"
             maxLength={50}
             required
             className={inputClass}
@@ -117,7 +117,7 @@ export default function Comments({ postId }: { postId: string }) {
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Je reactie…"
+            placeholder="Your comment…"
             maxLength={2000}
             required
             rows={3}
@@ -140,14 +140,14 @@ export default function Comments({ postId }: { postId: string }) {
               className="text-[10px] tracking-widest uppercase border border-glow-blue/30 text-glow-blue px-5 py-2.5 hover:bg-glow-blue/10 hover:border-glow-blue/60 transition-all duration-300 disabled:opacity-40"
               style={{ letterSpacing: "0.2em" }}
             >
-              {status === "sending" ? "Versturen…" : "Plaats reactie"}
+              {status === "sending" ? "Sending…" : "Post comment"}
             </button>
             {status === "error" && (
-              <span className="text-glow-pink/80 text-xs">Er ging iets mis. Probeer opnieuw.</span>
+              <span className="text-glow-pink/80 text-xs">Something went wrong. Please try again.</span>
             )}
           </div>
           <p className="text-silver/20 text-[10px] leading-relaxed">
-            Reacties worden gemodereerd en verschijnen pas na goedkeuring.
+            Comments are moderated and appear only after approval.
           </p>
         </form>
       )}
