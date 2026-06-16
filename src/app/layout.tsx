@@ -80,8 +80,8 @@ export default function RootLayout({
           }}
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/glyph favicon.png" type="image/png" sizes="32x32" />
-        <link rel="apple-touch-icon" href="/glyph favicon.png" />
+        <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#080a0e" />
         <script

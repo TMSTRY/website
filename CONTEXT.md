@@ -88,8 +88,9 @@ tmstry-com/
 ├── public/
 │   ├── hero-website.png                — Hero achtergrondafbeelding (hoge kwaliteit, groot)
 │   ├── primary logo.png                — Primair logo — gebruikt in MusicSection (artist image)
-│   ├── favicon.svg                     — SVG favicon
-│   ├── glyph favicon.png               — PNG favicon (32x32 + Apple touch icon)
+│   ├── favicon.svg                     — SVG favicon (primair)
+│   ├── favicon-32.png                  — PNG favicon 32×32 (fallback)
+│   ├── apple-touch-icon.png            — Apple touch icon 180×180
 │   ├── og.png                          — Open Graph / Twitter card image (1200×630)
 │   └── photos/
 │       ├── 1.jpg                       — Polaroid foto in "Origins" hoofdstuk modal
@@ -312,8 +313,7 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 ### Openstaande taken / verbeterpunten
 - Footer: Privacy, Terms, Press links wijzen naar `#` (nog geen inhoud)
 - About hoofdstuk 05 "In Their Words": quotes zijn placeholders (Ash Johansen etc. zijn fictief)
-- Favicon / apple-touch-icon: `glyph favicon.png` is ~1.6 MB — vervangen door correct geschaalde iconen (zie PLAN.md P4-2)
-- Bronfoto's in `/public/photos` zijn zware PNG's — comprimeren/converteren naar JPG/WebP (PLAN.md P4-3)
+- Bronfoto's in `/public/photos` zijn zware PNG's — comprimeren/converteren naar JPG/WebP (PLAN.md P4-3, nog te doen)
 
 > Ongebruikte assets (logo animation, logo background varianten, mini avatars, circle-logo, text logo's, YT Banner) zijn verwijderd uit `/public` (PLAN.md P4-1).
 
