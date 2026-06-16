@@ -87,20 +87,10 @@ tmstry-com/
 │
 ├── public/
 │   ├── hero-website.png                — Hero achtergrondafbeelding (hoge kwaliteit, groot)
-│   ├── circle-logo.png                 — Cirkel logo (niet actief in gebruik op de site)
 │   ├── primary logo.png                — Primair logo — gebruikt in MusicSection (artist image)
 │   ├── favicon.svg                     — SVG favicon
 │   ├── glyph favicon.png               — PNG favicon (32x32 + Apple touch icon)
 │   ├── og.png                          — Open Graph / Twitter card image (1200×630)
-│   ├── YT Banner 3.png                 — YouTube kanaal banner (niet actief op de site)
-│   ├── logo animation 02.mp4           — Logo animatie video (niet actief op de site)
-│   ├── logo background 2K.png          — Logo met achtergrond, 2K resolutie (niet actief)
-│   ├── logo background.png             — Logo met achtergrond (niet actief)
-│   ├── mini avatar 1.png               — Mini avatar variant 1 (niet actief)
-│   ├── mini avatar 2.png               — Mini avatar variant 2 (niet actief)
-│   ├── minimal icon.png                — Minimaal icoon (niet actief)
-│   ├── text logo.png                   — Tekst logo (niet actief)
-│   ├── text logo 2.png                 — Tekst logo variant 2 (niet actief)
 │   └── photos/
 │       ├── 1.jpg                       — Polaroid foto in "Origins" hoofdstuk modal
 │       ├── artistiek.png               — Artistieke foto — Press carousel (slot 1) + About featured
@@ -322,9 +312,10 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 ### Openstaande taken / verbeterpunten
 - Footer: Privacy, Terms, Press links wijzen naar `#` (nog geen inhoud)
 - About hoofdstuk 05 "In Their Words": quotes zijn placeholders (Ash Johansen etc. zijn fictief)
-- `circle-logo.png` staat in `/public` maar wordt nergens gebruikt
-- Meerdere assets in `/public` zijn ongebruikt (logo animation, logo background variants, mini avatars)
-- `text logo.png` / `text logo 2.png` staan klaar maar zijn niet actief in de site
+- Favicon / apple-touch-icon: `glyph favicon.png` is ~1.6 MB — vervangen door correct geschaalde iconen (zie PLAN.md P4-2)
+- Bronfoto's in `/public/photos` zijn zware PNG's — comprimeren/converteren naar JPG/WebP (PLAN.md P4-3)
+
+> Ongebruikte assets (logo animation, logo background varianten, mini avatars, circle-logo, text logo's, YT Banner) zijn verwijderd uit `/public` (PLAN.md P4-1).
 
 ### Bekende situaties
 - `styled-components` is als directe dependency toegevoegd om een Sanity build-fout te vermijden (was transitieve dep maar webpack kon het niet vinden)
