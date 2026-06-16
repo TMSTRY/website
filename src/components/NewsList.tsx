@@ -439,17 +439,17 @@ export default function NewsList({ posts }: { posts: Post[] }) {
               {post.image?.asset && (
                 <div className="absolute right-0 top-0 bottom-0 w-[60%] sm:w-1/2 md:w-[46%] pointer-events-none overflow-hidden">
                   <Image
-                    src={urlFor(post.image).width(640).height(800).fit("crop").url()}
+                    src={urlFor(post.image).width(1200).height(560).fit("crop").url()}
                     alt=""
                     fill
                     sizes="(max-width: 768px) 60vw, 46vw"
                     className="object-cover object-center grayscale opacity-50 scale-[1.04] transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-100"
                     style={{
                       WebkitMaskImage:
-                        "linear-gradient(to right, transparent 0%, #000 62%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+                        "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.6) 62%, #000 86%), linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
                       WebkitMaskComposite: "source-in",
                       maskImage:
-                        "linear-gradient(to right, transparent 0%, #000 62%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+                        "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.18) 38%, rgba(0,0,0,0.6) 62%, #000 86%), linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)",
                       maskComposite: "intersect",
                     }}
                   />
