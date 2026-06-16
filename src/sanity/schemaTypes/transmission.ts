@@ -30,8 +30,20 @@ export const transmission = defineType({
       name: "youtubeUrl",
       title: "YouTube URL",
       type: "url",
-      description: "The video this snippet is taken from.",
-      validation: (Rule) => Rule.required(),
+      description: "The video this snippet is taken from. Leave blank if you upload an MP4 below.",
+    }),
+    defineField({
+      name: "videoFile",
+      title: "MP4 clip (optional)",
+      type: "file",
+      options: { accept: "video/mp4" },
+      description: "Upload a short clip for exclusive/raw footage instead of YouTube.",
+    }),
+    defineField({
+      name: "mp4Url",
+      title: "External MP4 URL (optional)",
+      type: "url",
+      description: "Or link to an external .mp4 file.",
     }),
     defineField({
       name: "start",

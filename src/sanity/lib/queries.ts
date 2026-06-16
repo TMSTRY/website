@@ -43,7 +43,10 @@ export const postSlugsQuery = groq`
 
 // Signal Room transmissions (snippets per channel)
 export const transmissionsQuery = groq`
-  *[_type == "transmission" && defined(youtubeUrl)] | order(channel asc, coalesce(order, 999) asc, _createdAt asc){
-    _id, title, channel, youtubeUrl, "start": coalesce(start, 0), duration, corrupted, note
+  *[_type == "transmission" && (defined(youtubeUrl) || defined(mp4Url) || defined(videoFile.asset))]
+    | order(channel asc, coalesce(order, 999) asc, _createdAt asc){
+    _id, title, channel, youtubeUrl,
+    "mp4": coalesce(mp4Url, videoFile.asset->url),
+    "start": coalesce(start, 0), duration, corrupted, note
   }
 `;

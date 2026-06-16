@@ -71,21 +71,22 @@ export default function NavSignalTV() {
     >
       {/* Worn CRT set */}
       <span
-        className="relative block crt-flicker"
+        className="crt-bezel relative block crt-flicker"
         style={{
           width: "34px",
           height: "26px",
           padding: "3px",
           borderRadius: "5px",
-          background: "linear-gradient(160deg, #15171c, #0a0b0e)",
           boxShadow:
-            "inset 0 0 0 1px rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.6), 0 0 10px rgba(79,195,247,0.12)",
+            "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 4px rgba(0,0,0,0.8), 0 1px 2px rgba(0,0,0,0.6), 0 0 10px rgba(79,195,247,0.12)",
           transform: glitch ? "translate(0.5px,-0.5px) skewX(-2deg)" : "rotate(-3deg)",
           transition: "transform 0.15s ease",
         }}
       >
+        {/* worn grime */}
+        <span className="crt-grime absolute inset-0 pointer-events-none" style={{ borderRadius: "5px" }} />
         {/* Screen */}
-        <span className="relative block w-full h-full overflow-hidden" style={{ borderRadius: "2px", background: "#04060a" }}>
+        <span className="relative block w-full h-full overflow-hidden" style={{ borderRadius: "2px", background: "#04060a", zIndex: 1 }}>
           <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
           {/* secret frame flash */}
           {flashSrc && (

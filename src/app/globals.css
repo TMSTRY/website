@@ -255,9 +255,40 @@ body {
   );
 }
 
+/* Worn / dirty CRT bezel */
+.crt-bezel {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(70,62,48,0.22), transparent 38%),
+    radial-gradient(circle at 88% 86%, rgba(46,52,46,0.24), transparent 42%),
+    radial-gradient(circle at 92% 10%, rgba(28,28,34,0.30), transparent 38%),
+    radial-gradient(circle at 8% 90%, rgba(35,30,26,0.22), transparent 40%),
+    linear-gradient(160deg, #15171c, #090a0d);
+}
+.crt-grime {
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,0.02) 18px 19px),
+    repeating-linear-gradient(56deg, transparent 0 34px, rgba(0,0,0,0.08) 34px 35px);
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+}
+
+/* Corrupted-signal jitter */
+.signal-glitch {
+  animation: signal-glitch 1.6s steps(2) infinite;
+}
+@keyframes signal-glitch {
+  0%, 90%, 100% { transform: translate(0, 0); }
+  91% { transform: translate(-2px, 1px); }
+  93% { transform: translate(2px, -1px); }
+  95% { transform: translate(-1px, 0); }
+  97% { transform: translate(1px, 1px); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .signal-label-flicker,
-  .crt-flicker { animation: none; }
+  .crt-flicker,
+  .signal-glitch { animation: none; }
 }
 
 /* Gradient text */

@@ -6,7 +6,8 @@ export interface Transmission {
   _id: string;
   title: string;
   channel: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  mp4?: string | null;
   start: number;
   duration?: number;
   corrupted?: boolean;
