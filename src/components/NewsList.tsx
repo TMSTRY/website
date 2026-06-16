@@ -428,18 +428,18 @@ export default function NewsList({ posts }: { posts: Post[] }) {
           <FadeInSection key={post._id} delay={i * 0.08}>
             <motion.article
               onClick={() => setActive(post)}
-              className="group relative border-t border-white/[0.06] py-8 md:py-10 cursor-pointer overflow-hidden min-h-[132px] md:min-h-[164px]"
+              className="group relative border-t border-white/[0.06] py-7 md:py-9 cursor-pointer overflow-hidden min-h-[176px] md:min-h-[212px] flex items-center"
               whileHover={{ x: 4 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
               <div className="absolute left-0 top-0 bottom-0 w-px bg-glow-blue scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top z-20" />
 
-              {/* Cinematic poster panel — full row height, fades into the page
-                  via a mask on the image itself (no overlay = no seam) */}
+              {/* Cinematic poster panel — fixed-height strip, vertically centred,
+                  fades into the page via a mask on the image itself (no overlay) */}
               {post.image?.asset && (
-                <div className="absolute right-0 top-0 bottom-0 w-[60%] sm:w-1/2 md:w-[46%] pointer-events-none overflow-hidden">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[60%] sm:w-1/2 md:w-[46%] h-[140px] md:h-[184px] pointer-events-none overflow-hidden">
                   <Image
-                    src={urlFor(post.image).width(1200).height(560).fit("crop").url()}
+                    src={urlFor(post.image).width(1200).height(480).fit("crop").url()}
                     alt=""
                     fill
                     sizes="(max-width: 768px) 60vw, 46vw"
@@ -457,7 +457,7 @@ export default function NewsList({ posts }: { posts: Post[] }) {
               )}
 
               {/* Content — above the poster */}
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-[160px_1fr] gap-3 md:gap-12">
+              <div className="relative z-10 w-full grid grid-cols-1 md:grid-cols-[160px_1fr] gap-3 md:gap-12">
                 {/* Date & tag */}
                 <div className="flex md:flex-col gap-3 md:gap-2 pt-1">
                   <span
