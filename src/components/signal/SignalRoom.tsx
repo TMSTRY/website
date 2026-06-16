@@ -182,7 +182,7 @@ export default function SignalRoom() {
 
       {/* ── Central CRT ── */}
       <div className="absolute inset-0 z-10 flex items-center justify-center px-4 md:px-12">
-        <div className="w-full max-w-3xl md:pl-44">
+        <div className="w-full max-w-3xl">
           <div className="flex items-center justify-between mb-3 px-1">
             <span className="font-mono text-[10px] tracking-[0.3em] uppercase" style={{ color: corruptedActive ? "rgba(224,64,251,0.8)" : "rgba(79,195,247,0.7)" }}>
               {switching ? "// acquiring signal" : `// ${channel.id} · ${channel.label}`}
