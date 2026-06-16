@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useStaticCanvas } from "@/hooks/useStaticCanvas";
 import { useAmbientAudio } from "@/hooks/useAmbientAudio";
+import RoomDust from "./RoomDust";
 import { useSignalRoom } from "@/context/SignalRoomContext";
 import { useModalChrome } from "@/hooks/useModalChrome";
 import { getYouTubeId } from "@/components/newsTypes";
@@ -70,6 +71,20 @@ export default function SignalRoom() {
   const staticRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   useStaticCanvas(staticRef, { fps: 20, baseIntensity: 0.9, maxW: 480, maxH: 270 });
+
+  // Subtle mouse parallax for depth
+  const mx = useMotionValue(0);
+  const my = useMotionValue(0);
+  const sx = useSpring(mx, { stiffness: 45, damping: 18 });
+  const sy = useSpring(my, { stiffness: 45, damping: 18 });
+  const imgX = useTransform(sx, (v) => v * -18);
+  const imgY = useTransform(sy, (v) => v * -12);
+  const fogX = useTransform(sx, (v) => v * -44);
+  const fogY = useTransform(sy, (v) => v * -28);
+  const onMouseMove = (e: React.MouseEvent) => {
+    mx.set(e.clientX / window.innerWidth - 0.5);
+    my.set(e.clientY / window.innerHeight - 0.5);
+  };
 
   // ── Load content ──
   useEffect(() => {
@@ -182,17 +197,31 @@ export default function SignalRoom() {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+      onMouseMove={onMouseMove}
       className="fixed inset-0 z-[200] overflow-hidden bg-obsidian"
       role="dialog" aria-modal="true" aria-label="The Signal Room"
     >
       {/* ── Room scene ── */}
       <div className="absolute inset-0">
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 90% 70% at 50% 35%, #10131a 0%, #080a0e 55%, #050608 100%)" }} />
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/signal-room.webp')" }} />
+        {/* photoreal still with parallax */}
+        <motion.div className="absolute inset-[-4%] bg-cover bg-center" style={{ backgroundImage: "url('/signal-room.webp')", x: imgX, y: imgY, scale: 1.06 }} />
+
+        {/* drifting fog + dust (desktop) */}
+        <motion.div className="absolute inset-[-6%] hidden md:block pointer-events-none" style={{ x: fogX, y: fogY, mixBlendMode: "screen" }}>
+          <div className="signal-fog-a absolute rounded-full blur-[90px]" style={{ width: "55%", height: "55%", left: "8%", top: "40%", background: "radial-gradient(circle, rgba(150,165,185,0.10), transparent 70%)" }} />
+          <div className="signal-fog-b absolute rounded-full blur-[100px]" style={{ width: "60%", height: "60%", right: "6%", top: "10%", background: "radial-gradient(circle, rgba(120,140,170,0.09), transparent 70%)" }} />
+          <div className="signal-fog-a absolute rounded-full blur-[80px]" style={{ width: "45%", height: "40%", left: "35%", bottom: "0%", background: "radial-gradient(circle, rgba(170,175,190,0.08), transparent 70%)" }} />
+        </motion.div>
+        <div className="hidden md:block"><RoomDust /></div>
+
+        {/* ambient colour glows */}
         <div className="absolute inset-0 hidden md:block pointer-events-none" style={{ mixBlendMode: "screen" }}>
           <motion.div className="absolute rounded-full blur-[120px]" style={{ width: 460, height: 460, left: "16%", top: "52%", background: "radial-gradient(circle, rgba(79,195,247,0.10), transparent 70%)" }} animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }} />
           <motion.div className="absolute rounded-full blur-[130px]" style={{ width: 560, height: 560, right: "10%", top: "22%", background: "radial-gradient(circle, rgba(224,64,251,0.08), transparent 70%)" }} animate={{ opacity: [0.25, 0.5, 0.25] }} transition={{ duration: 13, repeat: Infinity, ease: "easeInOut" }} />
         </div>
+
+        {/* contrast scrims + vignette + scanlines */}
         <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(to bottom, rgba(5,6,8,0.7) 0%, transparent 20%, transparent 72%, rgba(5,6,8,0.55) 100%)" }} />
         <div className="absolute inset-y-0 left-0 w-[360px] pointer-events-none hidden md:block" style={{ background: "linear-gradient(to right, rgba(5,6,8,0.6), transparent)" }} />
         <div className="absolute inset-0 pointer-events-none" style={{ boxShadow: "inset 0 0 220px rgba(0,0,0,0.8)" }} />
@@ -297,8 +326,8 @@ export default function SignalRoom() {
                 <div className="absolute bottom-3 left-3 z-[7] font-mono text-[9px] tracking-[0.15em] uppercase text-glow-blue/50 max-w-[70%]">{snippet.note}</div>
               )}
 
-              {/* static layer */}
-              <canvas ref={staticRef} className="absolute inset-0 w-full h-full transition-opacity duration-300" style={{ opacity: switching ? 0.95 : corruptedActive ? 0.18 : 0, zIndex: 5 }} />
+              {/* static / film grain — light on every channel, heavy on corrupted */}
+              <canvas ref={staticRef} className="absolute inset-0 w-full h-full transition-opacity duration-300" style={{ opacity: switching ? 0.95 : corruptedActive ? 0.22 : 0.09, zIndex: 5 }} />
 
               <div className="absolute inset-0 crt-scanlines opacity-30 pointer-events-none" style={{ zIndex: 6 }} />
               <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 6, boxShadow: "inset 0 0 60px rgba(0,0,0,0.7)", background: "radial-gradient(ellipse at center, rgba(79,195,247,0.06), transparent 75%)" }} />

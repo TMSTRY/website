@@ -255,23 +255,56 @@ body {
   );
 }
 
-/* Worn / dirty CRT bezel */
+/* Worn / dirty / damaged CRT bezel */
 .crt-bezel {
   background:
-    radial-gradient(circle at 16% 12%, rgba(70,62,48,0.22), transparent 38%),
-    radial-gradient(circle at 88% 86%, rgba(46,52,46,0.24), transparent 42%),
-    radial-gradient(circle at 92% 10%, rgba(28,28,34,0.30), transparent 38%),
-    radial-gradient(circle at 8% 90%, rgba(35,30,26,0.22), transparent 40%),
-    linear-gradient(160deg, #15171c, #090a0d);
+    radial-gradient(circle at 16% 12%, rgba(80,70,52,0.30), transparent 36%),
+    radial-gradient(circle at 88% 86%, rgba(48,54,46,0.32), transparent 40%),
+    radial-gradient(circle at 92% 10%, rgba(24,24,30,0.45), transparent 34%),
+    radial-gradient(circle at 8% 90%, rgba(48,38,28,0.40), transparent 36%),
+    linear-gradient(160deg, #16181d, #070809);
 }
 .crt-grime {
   background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    repeating-linear-gradient(115deg, transparent 0 18px, rgba(255,255,255,0.02) 18px 19px),
-    repeating-linear-gradient(56deg, transparent 0 34px, rgba(0,0,0,0.08) 34px 35px);
+    /* grain */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    /* cracks */
+    linear-gradient(119deg, transparent 0 49.4%, rgba(0,0,0,0.55) 49.6% 49.85%, transparent 50.1%),
+    linear-gradient(27deg, transparent 0 73.4%, rgba(0,0,0,0.45) 73.6% 73.85%, transparent 74.1%),
+    linear-gradient(74deg, transparent 0 28.4%, rgba(0,0,0,0.35) 28.6% 28.8%, transparent 29%),
+    /* scratches + scuffs */
+    repeating-linear-gradient(115deg, transparent 0 14px, rgba(255,255,255,0.03) 14px 15px),
+    repeating-linear-gradient(56deg, transparent 0 26px, rgba(0,0,0,0.12) 26px 27px),
+    /* corner rust / dirt */
+    radial-gradient(circle at 5% 93%, rgba(66,44,28,0.5), transparent 20%),
+    radial-gradient(circle at 96% 5%, rgba(20,20,26,0.6), transparent 18%);
+  background-size: 110px 110px, 100% 100%, 100% 100%, 100% 100%, auto, auto, 100% 100%, 100% 100%;
   mix-blend-mode: soft-light;
-  opacity: 0.55;
+  opacity: 0.78;
 }
+/* extra darker damage that reads even over the screen edges */
+.crt-grime::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 4% 96%, rgba(0,0,0,0.55), transparent 14%),
+    radial-gradient(circle at 99% 2%, rgba(0,0,0,0.5), transparent 12%);
+  pointer-events: none;
+}
+
+/* Drifting fog */
+@keyframes signal-fog-a {
+  0%, 100% { transform: translate3d(-4%, 0, 0) scale(1.1); }
+  50% { transform: translate3d(6%, -3%, 0) scale(1.2); }
+}
+@keyframes signal-fog-b {
+  0%, 100% { transform: translate3d(5%, 2%, 0) scale(1.15); }
+  50% { transform: translate3d(-6%, -2%, 0) scale(1.25); }
+}
+.signal-fog-a { animation: signal-fog-a 26s ease-in-out infinite; }
+.signal-fog-b { animation: signal-fog-b 34s ease-in-out infinite; }
 
 /* Corrupted-signal jitter */
 .signal-glitch {
