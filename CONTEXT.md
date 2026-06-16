@@ -161,7 +161,7 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 - Bio tekst (3 paragrafen)
 - 8 klikbare hoofdstukken (accordion-modal):
   - 01 Manifesto, 02 Origins (polaroid foto), 03 Sonic DNA, 04 The Process
-  - 05 In Their Words (quotes), 06 The Universe, 07 Human Error, 08 Transmission
+  - 05 Inspirations (links: producers via Spotify + hedendaagse creators), 06 The Universe, 07 Human Error, 08 Transmission
 - Elk hoofdstuk heeft eigen accent-kleur (blauw / paars / roze)
 - Scroll-parallax achtergrond "TMSTRY" marquee
 - Featured foto (`artistiek.png`) onderaan sectie
@@ -311,8 +311,6 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 - Favicon (SVG + PNG)
 
 ### Openstaande taken / verbeterpunten
-- Footer: Privacy, Terms, Press links wijzen naar `#` (nog geen inhoud)
-- About hoofdstuk 05 "In Their Words": quotes zijn placeholders (Ash Johansen etc. zijn fictief)
 - Bronfoto's in `/public/photos` zijn zware PNG's — comprimeren/converteren naar JPG/WebP (PLAN.md P4-3, nog te doen)
 
 > Ongebruikte assets (logo animation, logo background varianten, mini avatars, circle-logo, text logo's, YT Banner) zijn verwijderd uit `/public` (PLAN.md P4-1).

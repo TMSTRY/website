@@ -12,60 +12,40 @@ It is thirty years of rhythm, melody, and restlessness, built by human hands and
 
 No fixed identity. Just everything that ever refused to stay quiet.`;
 
-// ─── Quote entries for "In Their Words" ───────────────────────────────────────
-type QuoteEntry = {
-  text: string;
+// ─── Inspirations for chapter "Inspirations" ───────────────────────────────────
+type Inspiration = {
   name: string;
-  role: string;
-  sig: {
-    fontClass: string;   // tailwind font utility
-    spacing: string;     // letter-spacing
-    weight: string;      // font-weight
-    upper: boolean;
-    italic: boolean;
-    size: string;        // font-size
-  };
+  note: string;   // short descriptor (role / context)
+  href: string;
 };
 
-const QUOTES: QuoteEntry[] = [
+type InspirationGroup = {
+  label: string;
+  blurb: string;
+  entries: Inspiration[];
+};
+
+const INSPIRATIONS: InspirationGroup[] = [
   {
-    text: "TMSTRY builds atmosphere like abandoned cinema.",
-    name: "Ash Johansen",
-    role: "Filmmaker / Visual Director",
-    sig: {
-      fontClass: "font-mono",
-      spacing: "0.32em",
-      weight: "300",
-      upper: true,
-      italic: false,
-      size: "0.58rem",
-    },
+    label: "The Architects",
+    blurb: "The blueprint was written by others first — the producers whose sound lived in my head long before I had the tools to make it real.",
+    entries: [
+      { name: "Timbaland",    note: "Producer",       href: "https://open.spotify.com/artist/5Y5TRrQiqgUO4S36tzjIRZ" },
+      { name: "Swizz Beatz",  note: "Producer",       href: "https://open.spotify.com/artist/2cADQgiLMjNhbsfeN52Bf3" },
+      { name: "The Neptunes", note: "Production duo",  href: "https://open.spotify.com/artist/0KuF7reCTOZwV7YJnHQqgr" },
+      { name: "Scott Storch", note: "Producer",       href: "https://open.spotify.com/artist/4hadtPX6kKntrnA87Zdy01" },
+      { name: "Just Blaze",   note: "Producer",       href: "https://open.spotify.com/artist/2gpPCu8rjzdobGqDZJpHiR" },
+      { name: "Havoc",        note: "Mobb Deep",      href: "https://open.spotify.com/artist/6UnvX7Zx85VNjOpLdaq49W" },
+    ],
   },
   {
-    text: "Synthetic aesthetics with an unexpectedly human center.",
-    name: "Creator Name",
-    role: "Visual Artist",
-    sig: {
-      fontClass: "font-display",
-      spacing: "0.07em",
-      weight: "200",
-      upper: false,
-      italic: true,
-      size: "0.72rem",
-    },
-  },
-  {
-    text: "Not songs. Environments.",
-    name: "Sound Designer",
-    role: "Producer",
-    sig: {
-      fontClass: "font-display",
-      spacing: "0.18em",
-      weight: "500",
-      upper: true,
-      italic: false,
-      size: "0.55rem",
-    },
+    label: "The Signal Now",
+    blurb: "Contemporary creators whose work I keep coming back to — talent worth following.",
+    entries: [
+      { name: "Aidan Yagu",   note: "Creator", href: "https://aidanyagu.com/" },
+      { name: "Ash Johansen", note: "Creator", href: "https://ashjo.com/" },
+      { name: "Saera Nova",   note: "Creator", href: "https://saeranova.com/" },
+    ],
   },
 ];
 
@@ -75,7 +55,7 @@ type Chapter = {
   label: string;
   accent: string;
   placeholder?: string;
-  quotes?: QuoteEntry[];
+  inspirations?: InspirationGroup[];
   photo?: { src: string; caption?: string; rotate?: string };
 };
 
@@ -138,9 +118,9 @@ The process is different every time. The standard is not.`,
   },
   {
     index: "05",
-    label: "In Their Words",
+    label: "Inspirations",
     accent: "#9c6aff",
-    quotes: QUOTES,
+    inspirations: INSPIRATIONS,
   },
   {
     index: "06",
@@ -192,7 +172,7 @@ That is the transmission. It is still broadcasting.`,
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
 function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => void }) {
-  const isQuotes = Boolean(chapter.quotes?.length);
+  const isInspirations = Boolean(chapter.inspirations?.length);
   useModalChrome(onClose);
 
   return (
@@ -259,81 +239,62 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
             style={{ background: `linear-gradient(90deg, ${chapter.accent}60, transparent)` }}
           />
 
-          {/* ── Quote layout ── */}
-          {isQuotes ? (
-            <div className="space-y-0">
-              {chapter.quotes!.map((q, i) => (
+          {/* ── Inspirations layout ── */}
+          {isInspirations ? (
+            <div className="space-y-10">
+              {chapter.inspirations!.map((group, gi) => (
                 <motion.div
-                  key={i}
+                  key={group.label}
                   initial={{ opacity: 0, y: 14 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.13, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: 0.08 + gi * 0.12, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {/* Quote text */}
-                  <blockquote
-                    className="font-display italic text-soft-white/75 leading-relaxed"
-                    style={{ fontSize: "clamp(1rem, 2.2vw, 1.15rem)", letterSpacing: "0.01em" }}
+                  {/* Group header */}
+                  <p
+                    className="font-mono text-[10px] uppercase mb-2"
+                    style={{ color: chapter.accent, letterSpacing: "0.3em" }}
                   >
-                    &ldquo;{q.text}&rdquo;
-                  </blockquote>
+                    {group.label}
+                  </p>
+                  <p className="text-silver/50 text-xs leading-relaxed mb-5 max-w-md">
+                    {group.blurb}
+                  </p>
 
-                  {/* Signature row */}
-                  <div className="mt-5 flex items-center gap-4">
-                    {/* Thin rule growing from left */}
-                    <div
-                      className="h-px flex-1"
-                      style={{
-                        background: `linear-gradient(90deg, transparent, ${chapter.accent}25)`,
-                      }}
-                    />
-
-                    {/* Creator identity block — right aligned */}
-                    <div className="text-right flex-shrink-0">
-                      <span
-                        className={`block text-soft-white/30 ${q.sig.fontClass}`}
-                        style={{
-                          letterSpacing: q.sig.spacing,
-                          fontWeight: q.sig.weight,
-                          textTransform: q.sig.upper ? "uppercase" : "none",
-                          fontStyle: q.sig.italic ? "italic" : "normal",
-                          fontSize: q.sig.size,
-                        }}
+                  {/* Entries */}
+                  <div className="space-y-0">
+                    {group.entries.map((entry) => (
+                      <a
+                        key={entry.name}
+                        href={entry.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="group/row flex items-center justify-between py-3 border-t border-white/[0.06] hover:border-white/[0.14] transition-colors duration-300"
                       >
-                        {q.name}
-                      </span>
-                      <span
-                        className="block text-silver/20 mt-0.5"
-                        style={{
-                          fontSize: "0.52rem",
-                          letterSpacing: "0.22em",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {q.role}
-                      </span>
-                    </div>
+                        <div className="flex items-baseline gap-3">
+                          <span className="text-soft-white/80 group-hover/row:text-soft-white text-sm transition-colors duration-300" style={{ letterSpacing: "0.02em" }}>
+                            {entry.name}
+                          </span>
+                          <span className="text-silver/30 text-[10px] tracking-widest uppercase" style={{ letterSpacing: "0.15em" }}>
+                            {entry.note}
+                          </span>
+                        </div>
+                        <svg
+                          viewBox="0 0 16 16"
+                          className="w-3 h-3 flex-shrink-0 fill-none stroke-current text-silver/25 group-hover/row:text-silver/60 transition-colors duration-300"
+                          strokeWidth={1.5}
+                        >
+                          <path d="M5 11L11 5M11 5H6M11 5v5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </a>
+                    ))}
+                    <div className="border-t border-white/[0.06]" />
                   </div>
-
-                  {/* Separator between quotes — not after last */}
-                  {i < chapter.quotes!.length - 1 && (
-                    <div className="my-9 flex justify-center">
-                      <div
-                        className="w-6 h-px"
-                        style={{ background: `${chapter.accent}20` }}
-                      />
-                    </div>
-                  )}
                 </motion.div>
               ))}
 
-              {/* Bottom label */}
-              <div className="mt-10 flex items-center justify-between">
-                <span
-                  className="text-[9px] tracking-widest uppercase"
-                  style={{ color: `${chapter.accent}50`, letterSpacing: "0.3em" }}
-                >
-                  Archival / Placeholder
-                </span>
+              {/* Bottom row */}
+              <div className="flex items-center justify-end">
                 <button
                   onClick={onClose}
                   className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
