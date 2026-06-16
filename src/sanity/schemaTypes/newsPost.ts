@@ -12,6 +12,14 @@ export const newsPost = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "slug",
+      title: "Slug",
+      type: "slug",
+      description: "URL for this post (/news/…). Click 'Generate' from the title.",
+      options: { source: "title", maxLength: 96 },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: "tag",
       title: "Tag",
       type: "string",

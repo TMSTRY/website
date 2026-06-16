@@ -3,6 +3,7 @@ import { groq } from "next-sanity";
 const postFields = `
   _id,
   title,
+  "slug": slug.current,
   tag,
   date,
   body,
@@ -27,3 +28,15 @@ export const latestPostsQuery = groq`
 
 // Total number of published posts (to decide whether to show "View all")
 export const postsCountQuery = groq`count(*[_type == "newsPost" && published != false])`;
+
+// A single published post by slug (for /news/[slug])
+export const postBySlugQuery = groq`
+  *[_type == "newsPost" && published != false && slug.current == $slug][0] {
+    ${postFields}
+  }
+`;
+
+// All published slugs (for generateStaticParams)
+export const postSlugsQuery = groq`
+  *[_type == "newsPost" && published != false && defined(slug.current)]{ "slug": slug.current }
+`;
