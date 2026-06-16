@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
   }
 
-  // Invalidate the cached news data; the homepage re-renders on next request.
+  // Invalidate cached CMS-driven data; pages re-render on next request.
   revalidateTag("newsPost");
-  return NextResponse.json({ revalidated: true, tag: "newsPost", now: Date.now() });
+  revalidateTag("transmission");
+  return NextResponse.json({ revalidated: true, tags: ["newsPost", "transmission"], now: Date.now() });
 }

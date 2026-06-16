@@ -40,3 +40,10 @@ export const postBySlugQuery = groq`
 export const postSlugsQuery = groq`
   *[_type == "newsPost" && published != false && defined(slug.current)]{ "slug": slug.current }
 `;
+
+// Signal Room transmissions (snippets per channel)
+export const transmissionsQuery = groq`
+  *[_type == "transmission" && defined(youtubeUrl)] | order(channel asc, coalesce(order, 999) asc, _createdAt asc){
+    _id, title, channel, youtubeUrl, "start": coalesce(start, 0), duration, corrupted, note
+  }
+`;
