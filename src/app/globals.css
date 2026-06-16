@@ -63,12 +63,34 @@ html {
   transition: background-color 0.4s ease;
 }
 
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
   overflow-x: hidden;
-  cursor: none;
   transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Hide the system cursor only where the custom cursor actually renders
+   (md+ with a fine pointer) — otherwise mouse users get no cursor at all */
+@media (min-width: 768px) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
 }
 
 /* Apply theme vars to key Tailwind bg classes */

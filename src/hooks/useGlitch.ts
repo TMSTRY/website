@@ -20,6 +20,7 @@ export function useGlitch({ intervalMs = 4000, jitter = 0.7 }: GlitchOptions = {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let timeout: ReturnType<typeof setTimeout>;
 

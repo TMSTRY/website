@@ -19,6 +19,8 @@ export default function ParticleField() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    // Honour reduced-motion: render nothing rather than an idle animation loop
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -35,7 +37,9 @@ export default function ParticleField() {
     resize();
     window.addEventListener("resize", resize);
 
-    for (let i = 0; i < 80; i++) {
+    // Fewer particles on small screens to save the mobile main thread
+    const COUNT = window.innerWidth < 768 ? 35 : 80;
+    for (let i = 0; i < COUNT; i++) {
       const color = colors[Math.floor(Math.random() * colors.length)];
       particles.push({
         x: Math.random() * W,
@@ -69,11 +73,22 @@ export default function ParticleField() {
       raf = requestAnimationFrame(draw);
     };
 
+    // Pause the loop while the tab is hidden to save battery/CPU
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+      } else {
+        raf = requestAnimationFrame(draw);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     draw();
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 

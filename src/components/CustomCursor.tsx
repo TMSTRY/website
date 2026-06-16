@@ -32,36 +32,35 @@ export default function CustomCursor() {
       raf = requestAnimationFrame(animate);
     };
 
-    const onMouseEnterLink = () => {
-      ring.style.width = "52px";
-      ring.style.height = "52px";
-      ring.style.borderColor = "rgba(224, 64, 251, 0.6)";
-      dot.style.transform = "scale(0)";
+    const INTERACTIVE = "a, button, [role='button']";
+
+    const setHovered = (hovered: boolean) => {
+      ring.style.width = hovered ? "52px" : "32px";
+      ring.style.height = hovered ? "52px" : "32px";
+      ring.style.borderColor = hovered
+        ? "rgba(224, 64, 251, 0.6)"
+        : "rgba(79, 195, 247, 0.4)";
+      dot.style.transform = hovered ? "scale(0)" : "scale(1)";
     };
 
-    const onMouseLeaveLink = () => {
-      ring.style.width = "32px";
-      ring.style.height = "32px";
-      ring.style.borderColor = "rgba(79, 195, 247, 0.4)";
-      dot.style.transform = "scale(1)";
+    // Delegated hover detection — works for elements added after mount (modals)
+    const onMouseOver = (e: MouseEvent) => {
+      if ((e.target as Element)?.closest?.(INTERACTIVE)) setHovered(true);
+    };
+    const onMouseOut = (e: MouseEvent) => {
+      if ((e.target as Element)?.closest?.(INTERACTIVE)) setHovered(false);
     };
 
     document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseover", onMouseOver);
+    document.addEventListener("mouseout", onMouseOut);
     raf = requestAnimationFrame(animate);
-
-    const links = document.querySelectorAll("a, button, [role='button']");
-    links.forEach((el) => {
-      el.addEventListener("mouseenter", onMouseEnterLink);
-      el.addEventListener("mouseleave", onMouseLeaveLink);
-    });
 
     return () => {
       document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseover", onMouseOver);
+      document.removeEventListener("mouseout", onMouseOut);
       cancelAnimationFrame(raf);
-      links.forEach((el) => {
-        el.removeEventListener("mouseenter", onMouseEnterLink);
-        el.removeEventListener("mouseleave", onMouseLeaveLink);
-      });
     };
   }, []);
 

@@ -215,6 +215,9 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="relative w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={chapter.label}
       >
         {/* Glow edge */}
         <div

@@ -48,6 +48,9 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="relative max-w-4xl w-full"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={alt}
       >
         <button
           onClick={onClose}

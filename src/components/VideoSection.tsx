@@ -124,6 +124,9 @@ function VideoModal({ videoId, onClose }: { videoId: string; onClose: () => void
         transition={{ duration: 0.3 }}
         className="relative w-full max-w-4xl"
         onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Video player"
       >
         <button
           onClick={onClose}
