@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
+import { useModalChrome } from "@/hooks/useModalChrome";
 
 const BIO = `TMSTRY is not a genre. Not a sound. Not a brand.
 
@@ -192,6 +193,7 @@ That is the transmission. It is still broadcasting.`,
 // ─── Modal ────────────────────────────────────────────────────────────────────
 function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => void }) {
   const isQuotes = Boolean(chapter.quotes?.length);
+  useModalChrome(onClose);
 
   return (
     <motion.div
@@ -344,13 +346,13 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
             <>
               <div className="space-y-4">
                 {chapter.placeholder!.split("\n\n").map((para, i) => (
-                  <>
-                    <p key={i} className="text-silver/60 text-sm leading-relaxed">
+                  <Fragment key={i}>
+                    <p className="text-silver/60 text-sm leading-relaxed">
                       {para}
                     </p>
                     {/* Polaroid after 2nd paragraph */}
                     {chapter.photo && i === 1 && (
-                      <div key="polaroid" className="flex justify-center py-4">
+                      <div className="flex justify-center py-4">
                         <motion.div
                           initial={{ opacity: 0, rotate: 0, scale: 0.95 }}
                           animate={{ opacity: 1, rotate: chapter.photo.rotate ?? "-2deg", scale: 1 }}
@@ -388,7 +390,7 @@ function ChapterModal({ chapter, onClose }: { chapter: Chapter; onClose: () => v
                         </motion.div>
                       </div>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </div>
               <div className="mt-10 flex items-center justify-between">

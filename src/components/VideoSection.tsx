@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
+import { useModalChrome } from "@/hooks/useModalChrome";
 import type { YTVideo } from "@/app/api/youtube/route";
 
 // Fallback featured video shown while loading
@@ -105,11 +106,7 @@ function VideoThumbnail({
 }
 
 function VideoModal({ videoId, onClose }: { videoId: string; onClose: () => void }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  useModalChrome(onClose);
 
   return (
     <motion.div

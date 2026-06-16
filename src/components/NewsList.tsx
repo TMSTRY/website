@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
+import { useModalChrome } from "@/hooks/useModalChrome";
 import { urlFor } from "@/sanity/lib/image";
 
 type SanityImage = {
@@ -98,6 +99,8 @@ function PostModal({
   onClose: () => void;
   onHashtag: (tag: string) => void;
 }) {
+  useModalChrome(onClose);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}

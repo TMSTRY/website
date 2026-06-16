@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
+import { useModalChrome } from "@/hooks/useModalChrome";
 
 const photos = [
   { src: "/photos/artistiek.png", alt: "TMSTRY — Artistic", label: "Editorial" },
@@ -29,6 +30,8 @@ function getSlot(offset: number) {
 
 // ── Lightbox ──────────────────────────────────────────────────────────────────
 function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  useModalChrome(onClose);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -71,7 +74,6 @@ function Lightbox({ src, alt, onClose }: { src: string; alt: string; onClose: ()
 export default function PressSection() {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
-  const [dragStart, setDragStart] = useState(0);
 
   const navigate = (dir: number) => {
     setCurrent((c) => Math.max(0, Math.min(photos.length - 1, c + dir)));
@@ -135,7 +137,6 @@ export default function PressSection() {
                     drag={isCenter ? "x" : false}
                     dragConstraints={{ left: 0, right: 0 }}
                     dragElastic={0.1}
-                    onDragStart={(_, info) => setDragStart(info.point.x)}
                     onDragEnd={(_, info) => {
                       if (info.offset.x < -40) navigate(1);
                       else if (info.offset.x > 40) navigate(-1);
