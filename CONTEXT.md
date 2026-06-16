@@ -91,7 +91,7 @@ tmstry-com/
 │   ├── primary logo.png                — Primair logo — gebruikt in MusicSection (artist image)
 │   ├── favicon.svg                     — SVG favicon
 │   ├── glyph favicon.png               — PNG favicon (32x32 + Apple touch icon)
-│   ├── Spotify Banner.png              — Open Graph / Twitter card image (1200×630)
+│   ├── og.png                          — Open Graph / Twitter card image (1200×630)
 │   ├── YT Banner 3.png                 — YouTube kanaal banner (niet actief op de site)
 │   ├── logo animation 02.mp4           — Logo animatie video (niet actief op de site)
 │   ├── logo background 2K.png          — Logo met achtergrond, 2K resolutie (niet actief)

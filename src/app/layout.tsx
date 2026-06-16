@@ -10,9 +10,11 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tmstry.com"),
   title: "TMSTRY — Human // Signal // AI",
   description: "TMSTRY is an AI-inspired music artist blending futuristic aesthetics with human emotion. Human emotion through artificial minds.",
   keywords: ["TMSTRY", "electronic music", "AI music", "futuristic", "cinematic"],
+  alternates: { canonical: "/" },
   openGraph: {
     title: "TMSTRY — Human // Signal // AI",
     description: "Human emotion through artificial minds.",
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
     siteName: "TMSTRY",
     images: [
       {
-        url: "https://tmstry.com/Spotify Banner.png",
+        url: "/og.png",
         width: 1200,
         height: 630,
         alt: "TMSTRY — Human // Signal // AI",
@@ -32,8 +34,30 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TMSTRY — Human // Signal // AI",
     description: "Human emotion through artificial minds.",
-    images: ["https://tmstry.com/Spotify Banner.png"],
+    images: ["/og.png"],
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  name: "TMSTRY",
+  url: "https://tmstry.com",
+  genre: ["Electronic", "Cinematic", "AI-Hybrid"],
+  image: "https://tmstry.com/og.png",
+  description: "Human emotion through artificial minds.",
+  sameAs: [
+    "https://open.spotify.com/artist/6N2jkKJIcbzHwMs4cswMpw",
+    "https://music.apple.com/us/artist/tmstry/646739670",
+    "https://music.youtube.com/@TMSTRY-music",
+    "https://www.youtube.com/@TMSTRY-music",
+    "https://www.instagram.com/tmstry/",
+    "https://soundcloud.com/tmstry",
+    "https://www.tiktok.com/@tmstry",
+    "https://x.com/TMSTRYmusic",
+    "https://music.amazon.com/artists/B00CQATSF0/tmstry",
+    "https://www.deezer.com/en/artist/4768699",
+  ],
 };
 
 export default function RootLayout({
@@ -49,6 +73,10 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/glyph favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#080a0e" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className="bg-obsidian text-soft-white antialiased">
         <div className="noise-overlay" aria-hidden="true" />
