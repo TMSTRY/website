@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const newsPost = defineType({
   name: "newsPost",
@@ -36,8 +36,44 @@ export const newsPost = defineType({
     defineField({
       name: "body",
       title: "Body",
-      type: "text",
-      rows: 5,
+      type: "array",
+      of: [
+        defineArrayMember({
+          type: "block",
+          styles: [
+            { title: "Normal", value: "normal" },
+            { title: "Subtitle", value: "h2" },
+            { title: "Small subtitle", value: "h3" },
+            { title: "Quote", value: "blockquote" },
+          ],
+          lists: [
+            { title: "Bullet", value: "bullet" },
+            { title: "Numbered", value: "number" },
+          ],
+          marks: {
+            decorators: [
+              { title: "Bold", value: "strong" },
+              { title: "Italic", value: "em" },
+            ],
+            annotations: [
+              defineArrayMember({
+                name: "link",
+                type: "object",
+                title: "Link",
+                fields: [
+                  {
+                    name: "href",
+                    type: "url",
+                    title: "URL",
+                    validation: (Rule) =>
+                      Rule.uri({ scheme: ["http", "https", "mailto"] }),
+                  },
+                ],
+              }),
+            ],
+          },
+        }),
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -57,6 +93,14 @@ export const newsPost = defineType({
       title: "Published",
       type: "boolean",
       initialValue: true,
+    }),
+    defineField({
+      name: "likes",
+      title: "Likes",
+      type: "number",
+      initialValue: 0,
+      readOnly: true,
+      description: "Automatisch bijgehouden door de site — niet handmatig bewerken.",
     }),
   ],
   orderings: [

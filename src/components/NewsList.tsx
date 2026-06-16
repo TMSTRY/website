@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { PortableText, type PortableTextComponents } from "@portabletext/react";
+import type { PortableTextBlock } from "@portabletext/types";
 import Image from "next/image";
 import FadeInSection from "./FadeInSection";
 import { useModalChrome } from "@/hooks/useModalChrome";
@@ -12,14 +14,73 @@ type SanityImage = {
   asset: { _ref: string };
 };
 
+// Body can be rich text (Portable Text) or — for legacy posts — a plain string
+type PostBody = string | PortableTextBlock[];
+
 type Post = {
   _id: string;
   title: string;
   tag: string;
   date: string;
-  body: string;
+  body: PostBody;
   image?: SanityImage;
   youtubeUrl?: string;
+  likes?: number;
+};
+
+// Flatten a single Portable Text block to its text
+function blockText(block: unknown): string {
+  const b = block as { _type?: string; children?: { text?: unknown }[] };
+  if (b?._type !== "block" || !Array.isArray(b.children)) return "";
+  return b.children.map((c) => (typeof c.text === "string" ? c.text : "")).join("");
+}
+
+// Plain-text version of a body (rich text or legacy string) — for previews,
+// hashtag extraction and filtering
+function bodyToPlainText(body: PostBody): string {
+  if (typeof body === "string") return body;
+  if (!Array.isArray(body)) return "";
+  return body.map(blockText).join("\n\n");
+}
+
+// True when a paragraph/block contains only hashtags (shown as pills instead)
+const HASHTAG_ONLY = /^(#[\w]+\s*)+$/;
+
+// Rendering rules for rich-text body, styled to match the site
+const ptComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => (
+      <p className="text-silver/70 text-sm leading-relaxed">{children}</p>
+    ),
+    h2: ({ children }) => (
+      <h4 className="font-display font-semibold text-soft-white text-lg md:text-xl mt-6" style={{ letterSpacing: "0.02em" }}>{children}</h4>
+    ),
+    h3: ({ children }) => (
+      <h5 className="font-display font-medium text-soft-white/90 text-base mt-5" style={{ letterSpacing: "0.02em" }}>{children}</h5>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-2 border-glow-blue/30 pl-4 italic text-soft-white/70 text-sm leading-relaxed">{children}</blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => <ul className="list-disc pl-5 space-y-1 text-silver/70 text-sm leading-relaxed">{children}</ul>,
+    number: ({ children }) => <ol className="list-decimal pl-5 space-y-1 text-silver/70 text-sm leading-relaxed">{children}</ol>,
+  },
+  marks: {
+    strong: ({ children }) => <strong className="text-soft-white font-semibold">{children}</strong>,
+    em: ({ children }) => <em className="italic">{children}</em>,
+    link: ({ children, value }) => (
+      <a
+        href={(value as { href?: string })?.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        className="text-glow-blue/80 hover:text-glow-blue underline underline-offset-2"
+      >
+        {children}
+      </a>
+    ),
+  },
 };
 
 function getYouTubeId(url: string): string | null {
@@ -36,26 +97,36 @@ function formatDate(dateStr: string) {
   });
 }
 
-// Extract hashtags from body text
-function extractHashtags(text: string): string[] {
-  const matches = text.match(/#[\w]+/g) ?? [];
+// Extract hashtags from a body (rich text or string)
+function extractHashtags(body: PostBody): string[] {
+  const matches = bodyToPlainText(body).match(/#[\w]+/g) ?? [];
   return [...new Set(matches.map((t) => t.toLowerCase()))];
 }
 
-// Body text without hashtag lines
-function RenderBody({ text }: { text: string }) {
-  const cleanParas = text
-    .split("\n\n")
-    .filter((para) => !/^(#[\w]+\s*)+$/.test(para.trim()));
-  return (
-    <>
-      {cleanParas.map((para, i) => (
-        <p key={i} className="text-silver/70 text-sm leading-relaxed">
-          {para}
-        </p>
-      ))}
-    </>
-  );
+// Body without hashtag-only lines/blocks (hashtags become pills)
+function RenderBody({ body }: { body: PostBody }) {
+  // Legacy plain-text posts (pre rich-text migration)
+  if (typeof body === "string") {
+    const cleanParas = body
+      .split("\n\n")
+      .filter((para) => !HASHTAG_ONLY.test(para.trim()));
+    return (
+      <>
+        {cleanParas.map((para, i) => (
+          <p key={i} className="text-silver/70 text-sm leading-relaxed">
+            {para}
+          </p>
+        ))}
+      </>
+    );
+  }
+
+  // Rich text — drop blocks that are only hashtags
+  const blocks = body.filter((b) => {
+    const t = blockText(b).trim();
+    return t === "" || !HASHTAG_ONLY.test(t);
+  });
+  return <PortableText value={blocks} components={ptComponents} />;
 }
 
 // Hashtag pill badges
@@ -87,6 +158,64 @@ function HashtagPills({
         </button>
       ))}
     </div>
+  );
+}
+
+// Thumbs-up — one like per browser (deduped via localStorage)
+function LikeButton({ post }: { post: Post }) {
+  const [count, setCount] = useState(post.likes ?? 0);
+  const [liked, setLiked] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(`tmstry-liked-${post._id}`)) setLiked(true);
+    } catch { /* ignore */ }
+  }, [post._id]);
+
+  const onLike = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (liked || busy) return;
+    setBusy(true);
+    // Optimistic update
+    setCount((c) => c + 1);
+    setLiked(true);
+    try { localStorage.setItem(`tmstry-liked-${post._id}`, "1"); } catch { /* ignore */ }
+
+    try {
+      const res = await fetch("/api/like", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post._id }),
+      });
+      if (!res.ok) throw new Error("like failed");
+      const data = await res.json();
+      if (typeof data.likes === "number") setCount(data.likes);
+    } catch {
+      // Revert on failure
+      setCount((c) => Math.max(0, c - 1));
+      setLiked(false);
+      try { localStorage.removeItem(`tmstry-liked-${post._id}`); } catch { /* ignore */ }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={onLike}
+      disabled={liked || busy}
+      aria-pressed={liked}
+      aria-label={liked ? "Liked" : "Like this post"}
+      className="flex items-center gap-2 text-[11px] tracking-widest uppercase transition-colors duration-200 disabled:cursor-default"
+      style={{ letterSpacing: "0.15em", color: liked ? "rgba(224,64,251,0.9)" : "rgba(136,146,160,0.6)" }}
+    >
+      <svg viewBox="0 0 24 24" className="w-4 h-4" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.6}>
+        <path d="M7 10v12" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span className="font-mono">{count}</span>
+    </button>
   );
 }
 
@@ -177,7 +306,7 @@ function PostModal({
 
           {/* Body */}
           <div className="space-y-4">
-            <RenderBody text={post.body} />
+            <RenderBody body={post.body} />
           </div>
 
           {/* Hashtag pills */}
@@ -199,26 +328,29 @@ function PostModal({
             </div>
           )}
 
-          {/* Bottom row: YouTube link + Close */}
-          <div className="mt-8 flex items-center justify-between">
-            {post.youtubeUrl ? (
-              <a
-                href={post.youtubeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="text-[10px] tracking-widest uppercase flex items-center gap-2 transition-colors duration-200"
-                style={{ color: "rgba(79,195,247,0.6)", letterSpacing: "0.2em" }}
-              >
-                Watch on YouTube
-                <svg viewBox="0 0 12 12" className="w-3 h-3 fill-none stroke-current" strokeWidth={1.5}>
-                  <path d="M2 10L10 2M10 2H5M10 2v5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </a>
-            ) : <span />}
+          {/* Bottom row: like + YouTube link + Close */}
+          <div className="mt-8 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-6">
+              <LikeButton post={post} />
+              {post.youtubeUrl && (
+                <a
+                  href={post.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-[10px] tracking-widest uppercase flex items-center gap-2 transition-colors duration-200"
+                  style={{ color: "rgba(79,195,247,0.6)", letterSpacing: "0.2em" }}
+                >
+                  Watch on YouTube
+                  <svg viewBox="0 0 12 12" className="w-3 h-3 fill-none stroke-current" strokeWidth={1.5}>
+                    <path d="M2 10L10 2M10 2H5M10 2v5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              )}
+            </div>
             <button
               onClick={onClose}
-              className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300"
+              className="text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/50 hover:text-soft-white hover:border-white/30 transition-all duration-300 flex-shrink-0"
               style={{ letterSpacing: "0.2em" }}
             >
               Close
@@ -235,7 +367,7 @@ export default function NewsList({ posts }: { posts: Post[] }) {
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
 
   const filtered = activeHashtag
-    ? posts.filter((p) => p.body.toLowerCase().includes(activeHashtag))
+    ? posts.filter((p) => bodyToPlainText(p.body).toLowerCase().includes(activeHashtag))
     : posts;
 
   if (!posts.length) {
@@ -327,8 +459,16 @@ export default function NewsList({ posts }: { posts: Post[] }) {
                     className="text-silver/50 text-sm leading-relaxed line-clamp-2"
                     style={{ letterSpacing: "0.02em" }}
                   >
-                    {post.body}
+                    {bodyToPlainText(post.body)}
                   </p>
+                  {(post.likes ?? 0) > 0 && (
+                    <div className="mt-3 flex items-center gap-1.5 text-silver/30 text-[10px] font-mono">
+                      <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor">
+                        <path d="M7 10v12H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h3zm2 0 3.5-7.5A2 2 0 0 1 15 4v4h4.5a2 2 0 0 1 2 2.4l-1.6 8A2 2 0 0 1 18 20H9V10z" />
+                      </svg>
+                      {post.likes}
+                    </div>
+                  )}
                 </div>
 
                 {/* Thumbnail */}

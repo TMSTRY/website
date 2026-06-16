@@ -9,5 +9,6 @@ export const newPostsQuery = groq`
     body,
     image,
     youtubeUrl,
+    "likes": coalesce(likes, 0),
   }
 `;
