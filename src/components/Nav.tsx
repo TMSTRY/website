@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
+import NavSignalTV from "./signal/NavSignalTV";
 
 const navLinks = [
   { href: "#music", label: "Music" },
@@ -66,12 +67,16 @@ export default function Nav() {
               </li>
             ))}
           </ul>
+          <NavSignalTV />
           <ThemeToggle />
         </div>
 
+        {/* Mobile: signal + menu */}
+        <div className="md:hidden flex items-center gap-3">
+          <NavSignalTV />
         {/* Mobile menu button */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="flex flex-col gap-1.5 p-2"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -79,6 +84,7 @@ export default function Nav() {
           <span className={`block w-4 h-px bg-soft-white transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
           <span className={`block w-6 h-px bg-soft-white transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2.5" : ""}`} />
         </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}

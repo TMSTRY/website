@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { SignalRoomProvider } from "@/context/SignalRoomContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -91,7 +92,9 @@ export default function RootLayout({
       </head>
       <body className="bg-obsidian text-soft-white antialiased">
         <div className="noise-overlay" aria-hidden="true" />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <SignalRoomProvider>{children}</SignalRoomProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
