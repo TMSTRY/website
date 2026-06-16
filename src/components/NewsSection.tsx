@@ -2,10 +2,12 @@ import { client } from "@/sanity/lib/client";
 import { newPostsQuery } from "@/sanity/lib/queries";
 import NewsList from "./NewsList";
 
-export const dynamic = "force-dynamic";
-
 export default async function NewsSection() {
-  const posts = await client.fetch(newPostsQuery, {}, { cache: "no-store" }).catch(() => []);
+  // Tag-based ISR: the homepage is statically rendered / edge-cached and only
+  // rebuilt when the Sanity webhook hits /api/revalidate (revalidateTag).
+  const posts = await client
+    .fetch(newPostsQuery, {}, { next: { tags: ["newsPost"] } })
+    .catch(() => []);
 
   return (
     <section id="news" className="py-24 md:py-36 px-6 md:px-12 relative">

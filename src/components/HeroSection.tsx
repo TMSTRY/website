@@ -38,7 +38,8 @@ export default function HeroSection() {
           alt=""
           fill
           priority
-          quality={95}
+          quality={75}
+          sizes="100vw"
           className="object-cover object-center"
           style={{ opacity: "var(--hero-img-opacity)" } as React.CSSProperties}
         />

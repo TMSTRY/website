@@ -2,7 +2,8 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "**" },
+      { protocol: "https", hostname: "i.ytimg.com" },   // YouTube thumbnails
+      { protocol: "https", hostname: "cdn.sanity.io" },  // Sanity CMS images
     ],
   },
 };

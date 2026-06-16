@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Invalid secret" }, { status: 401 });
   }
 
-  revalidatePath("/");
-  return NextResponse.json({ revalidated: true, now: Date.now() });
+  // Invalidate the cached news data; the homepage re-renders on next request.
+  revalidateTag("newsPost");
+  return NextResponse.json({ revalidated: true, tag: "newsPost", now: Date.now() });
 }
