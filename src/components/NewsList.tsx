@@ -434,25 +434,24 @@ export default function NewsList({ posts }: { posts: Post[] }) {
             >
               <div className="absolute left-0 top-0 bottom-0 w-px bg-glow-blue scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-top z-20" />
 
-              {/* Cinematic poster panel — full row height, bleeds into the page */}
+              {/* Cinematic poster panel — full row height, fades into the page
+                  via a mask on the image itself (no overlay = no seam) */}
               {post.image?.asset && (
-                <div className="absolute right-0 top-0 bottom-0 w-[55%] sm:w-1/2 md:w-[44%] pointer-events-none overflow-hidden">
+                <div className="absolute right-0 top-0 bottom-0 w-[60%] sm:w-1/2 md:w-[46%] pointer-events-none overflow-hidden">
                   <Image
                     src={urlFor(post.image).width(640).height(800).fit("crop").url()}
                     alt=""
                     fill
-                    sizes="(max-width: 768px) 55vw, 44vw"
-                    className="object-cover object-center grayscale opacity-45 scale-[1.03] transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-100"
-                  />
-                  {/* horizontal fade into the page background (theme-aware) */}
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: "linear-gradient(90deg, rgb(var(--c-bg)) 2%, rgb(var(--c-bg) / 0.72) 34%, rgb(var(--c-bg) / 0) 82%)" }}
-                  />
-                  {/* soft top/bottom letterbox into the background */}
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: "linear-gradient(0deg, rgb(var(--c-bg)) 0%, rgb(var(--c-bg) / 0) 22%, rgb(var(--c-bg) / 0) 78%, rgb(var(--c-bg)) 100%)" }}
+                    sizes="(max-width: 768px) 60vw, 46vw"
+                    className="object-cover object-center grayscale opacity-50 scale-[1.04] transition-all duration-700 ease-out group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-100"
+                    style={{
+                      WebkitMaskImage:
+                        "linear-gradient(to right, transparent 0%, #000 62%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+                      WebkitMaskComposite: "source-in",
+                      maskImage:
+                        "linear-gradient(to right, transparent 0%, #000 62%), linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+                      maskComposite: "intersect",
+                    }}
                   />
                 </div>
               )}
