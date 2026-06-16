@@ -47,14 +47,18 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="mt-10 pt-8 border-t border-white/[0.03] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex gap-6">
-            {["Privacy", "Terms", "Press"].map((link) => (
+            {[
+              { label: "Privacy", href: "/privacy" },
+              { label: "Terms", href: "/terms" },
+              { label: "Press", href: "/#press" },
+            ].map((link) => (
               <a
-                key={link}
-                href="#"
+                key={link.label}
+                href={link.href}
                 className="text-silver/25 hover:text-silver/60 text-[10px] tracking-widest uppercase transition-colors duration-300"
                 style={{ letterSpacing: "0.2em" }}
               >
-                {link}
+                {link.label}
               </a>
             ))}
           </div>
