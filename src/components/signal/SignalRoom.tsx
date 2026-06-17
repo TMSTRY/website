@@ -64,7 +64,7 @@ export default function SignalRoom() {
   const [channelIdx, setChannelIdx] = useState(0);
   const [snippetIdx, setSnippetIdx] = useState(0);
   const [switching, setSwitching] = useState(true);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false); // audio on the moment you enter
   const [glitchMsg, setGlitchMsg] = useState<string | null>(null);
   const [lore, setLore] = useState<{ text: string; side: "left" | "right" } | null>(null);
 
@@ -192,7 +192,7 @@ export default function SignalRoom() {
   }, [snippet, muted]);
 
   const btn =
-    "text-[10px] tracking-widest uppercase border border-white/10 px-4 py-2 text-silver/60 hover:text-soft-white hover:border-white/30 transition-all duration-300";
+    "text-[10px] tracking-widest uppercase border border-white/15 bg-obsidian/55 backdrop-blur-sm px-4 py-2.5 text-soft-white/85 hover:text-soft-white hover:border-glow-blue/50 hover:bg-obsidian/75 transition-all duration-300";
 
   return (
     <motion.div
