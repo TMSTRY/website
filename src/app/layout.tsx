@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SignalRoomProvider } from "@/context/SignalRoomContext";
 import ScrollProgress from "@/components/ScrollProgress";
+import ConsoleSignal from "@/components/ConsoleSignal";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,6 +102,7 @@ export default function RootLayout({
       <body className="bg-obsidian text-soft-white antialiased">
         <div className="noise-overlay" aria-hidden="true" />
         <ScrollProgress />
+        <ConsoleSignal />
         <ThemeProvider>
           <SignalRoomProvider>{children}</SignalRoomProvider>
         </ThemeProvider>
