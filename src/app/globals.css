@@ -130,6 +130,17 @@ body {
   color: #e8eaed;
 }
 
+/* Keyboard focus ring — visible since the mouse cursor is hidden.
+   focus-visible only triggers for keyboard/AT, not mouse clicks. */
+:focus-visible {
+  outline: 2px solid rgba(79, 195, 247, 0.8);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Cursor */
 .cursor-dot {
   width: 6px;
