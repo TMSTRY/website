@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Rubik_Distressed } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SignalRoomProvider } from "@/context/SignalRoomContext";
+import ScrollProgress from "@/components/ScrollProgress";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -99,6 +100,7 @@ export default function RootLayout({
       </head>
       <body className="bg-obsidian text-soft-white antialiased">
         <div className="noise-overlay" aria-hidden="true" />
+        <ScrollProgress />
         <ThemeProvider>
           <SignalRoomProvider>{children}</SignalRoomProvider>
         </ThemeProvider>

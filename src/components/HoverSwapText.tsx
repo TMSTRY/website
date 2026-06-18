@@ -22,11 +22,11 @@ export default function HoverSwapText({
 }) {
   const t = TONES[tone];
   return (
-    <span className={`relative inline-block group/swap ${className}`}>
+    <span className={`swap-group relative inline-block group/swap ${className}`}>
       <span className="block transition-opacity duration-200 group-hover/swap:opacity-0">{text}</span>
       <span
         aria-hidden="true"
-        className={`font-grunge normal-case pointer-events-none absolute left-1/2 top-1/2 whitespace-nowrap opacity-0 group-hover/swap:opacity-100 transition-opacity duration-200 ${t.cls} ${altClassName}`}
+        className={`swap-alt font-grunge normal-case pointer-events-none absolute left-1/2 top-1/2 whitespace-nowrap opacity-0 group-hover/swap:opacity-100 transition-opacity duration-200 ${t.cls} ${altClassName}`}
         style={{
           transform: "translate(-50%, -50%) skewX(-12deg) rotate(-3deg)",
           textShadow: t.shadow,

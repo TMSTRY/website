@@ -59,6 +59,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 6rem; /* clear the fixed nav when jumping to a section */
   background-color: var(--bg);
   transition: background-color 0.4s ease;
 }
@@ -219,6 +220,20 @@ body {
 /* Grungy display font (hover swap) */
 .font-grunge {
   font-family: var(--font-grunge), cursive;
+}
+
+/* Glitch jitter on the dirty hover word */
+@keyframes swap-glitch {
+  0%, 100% { transform: translate(-50%, -50%) skewX(-12deg) rotate(-3deg); text-shadow: 0 0 14px currentColor; }
+  25% { transform: translate(calc(-50% - 3px), -50%) skewX(-12deg) rotate(-3deg); text-shadow: 3px 0 rgba(79,195,247,0.8), -3px 0 rgba(224,64,251,0.8); }
+  50% { transform: translate(calc(-50% + 3px), calc(-50% - 1px)) skewX(-12deg) rotate(-3deg); text-shadow: 0 0 14px currentColor; }
+  75% { transform: translate(calc(-50% - 1px), calc(-50% + 1px)) skewX(-12deg) rotate(-3deg); text-shadow: 2px 0 rgba(79,195,247,0.7), -2px 0 rgba(224,64,251,0.7); }
+}
+.swap-group:hover .swap-alt {
+  animation: swap-glitch 0.45s steps(2, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .swap-group:hover .swap-alt { animation: none; }
 }
 
 /* Portrait glitch on hover (Music section headshot) */
