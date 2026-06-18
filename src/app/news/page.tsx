@@ -51,7 +51,7 @@ export default async function NewsArchivePage() {
               className="text-[9px] tracking-widest uppercase"
               style={{ letterSpacing: "0.4em", color: "rgba(79,195,247,0.8)" }}
             >
-              <HoverSwapText text="News & Updates" alt="Gossip" altClassName="text-sm" />
+              <HoverSwapText text="News & Updates" alt="Gossip" tone="pink" altClassName="text-sm" />
             </span>
           </div>
           <h1
