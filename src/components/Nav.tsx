@@ -18,11 +18,32 @@ const navLinks: { href: string; label: string; alt?: string }[] = [
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Scroll-spy: mark the nav item of the section currently in view
+  useEffect(() => {
+    const els = navLinks
+      .map((l) => document.getElementById(l.href.replace("#", "")))
+      .filter((el): el is HTMLElement => !!el);
+    if (!els.length) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length) {
+          visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          setActiveId(visible[0].target.id);
+        }
+      },
+      { rootMargin: "-40% 0px -55% 0px", threshold: [0, 0.25, 0.5, 1] }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
   const handleNavClick = (href: string) => {
@@ -55,18 +76,29 @@ export default function Nav() {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-10">
           <ul className="flex items-center gap-10">
-            {navLinks.map((link, i) => (
-              <li key={link.href}>
-                <button
-                  onClick={() => handleNavClick(link.href)}
-                  className="text-silver hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300 relative group"
-                  style={{ letterSpacing: "0.2em" }}
-                >
-                  {link.alt ? <HoverSwapText text={link.label} alt={link.alt} tone={i % 2 === 0 ? "purple" : "pink"} altClassName="text-base" /> : link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-glow-blue group-hover:w-full transition-all duration-300" />
-                </button>
-              </li>
-            ))}
+            {navLinks.map((link, i) => {
+              const active = activeId === link.href.replace("#", "");
+              return (
+                <li key={link.href}>
+                  <button
+                    onClick={() => handleNavClick(link.href)}
+                    aria-current={active ? "true" : undefined}
+                    className={`text-xs tracking-widest uppercase transition-colors duration-300 relative group ${active ? "text-soft-white" : "text-silver hover:text-soft-white"}`}
+                    style={{ letterSpacing: "0.2em" }}
+                  >
+                    {link.alt ? <HoverSwapText text={link.label} alt={link.alt} tone={i % 2 === 0 ? "purple" : "pink"} altClassName="text-base" /> : link.label}
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute -right-2.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-glow-blue"
+                        style={{ boxShadow: "0 0 6px rgba(79,195,247,0.9)" }}
+                      />
+                    )}
+                    <span className={`absolute -bottom-1 left-0 h-px bg-glow-blue transition-all duration-300 ${active ? "w-full" : "w-0 group-hover:w-full"}`} />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
           <NavSignalTV />
           <ThemeToggle />
@@ -98,17 +130,22 @@ export default function Nav() {
             className="md:hidden bg-charcoal/95 backdrop-blur-xl border-b border-white/5"
           >
             <ul className="px-6 py-6 flex flex-col gap-6">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <button
-                    onClick={() => handleNavClick(link.href)}
-                    className="text-silver hover:text-soft-white text-sm tracking-widest uppercase transition-colors"
-                    style={{ letterSpacing: "0.25em" }}
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
+              {navLinks.map((link) => {
+                const active = activeId === link.href.replace("#", "");
+                return (
+                  <li key={link.href}>
+                    <button
+                      onClick={() => handleNavClick(link.href)}
+                      aria-current={active ? "true" : undefined}
+                      className={`text-sm tracking-widest uppercase transition-colors flex items-center gap-2 ${active ? "text-soft-white" : "text-silver hover:text-soft-white"}`}
+                      style={{ letterSpacing: "0.25em" }}
+                    >
+                      {link.label}
+                      {active && <span aria-hidden="true" className="w-1 h-1 rounded-full bg-glow-blue" style={{ boxShadow: "0 0 6px rgba(79,195,247,0.9)" }} />}
+                    </button>
+                  </li>
+                );
+              })}
               <li className="pt-2 border-t border-white/[0.06]">
                 <ThemeToggle />
               </li>
