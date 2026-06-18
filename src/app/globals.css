@@ -216,6 +216,11 @@ body {
   letter-spacing: 0.4em;
 }
 
+/* Grungy display font (hover swap) */
+.font-grunge {
+  font-family: var(--font-grunge), cursive;
+}
+
 /* ─── Signal / CRT easter egg ──────────────────────────────────────────────── */
 .signal-label-flicker {
   animation: signal-label-flicker 6s steps(1) infinite;

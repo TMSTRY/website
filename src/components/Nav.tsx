@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
 import NavSignalTV from "./signal/NavSignalTV";
+import HoverSwapText from "./HoverSwapText";
 
-const navLinks = [
+const navLinks: { href: string; label: string; alt?: string }[] = [
   { href: "#music", label: "Music" },
   { href: "#video", label: "Video" },
   { href: "#about", label: "About" },
   { href: "#press", label: "Press" },
-  { href: "#news", label: "News" },
+  { href: "#news", label: "News", alt: "Gossip" },
   { href: "#connect", label: "Connect" },
 ];
 
@@ -61,7 +62,7 @@ export default function Nav() {
                   className="text-silver hover:text-soft-white text-xs tracking-widest uppercase transition-colors duration-300 relative group"
                   style={{ letterSpacing: "0.2em" }}
                 >
-                  {link.label}
+                  {link.alt ? <HoverSwapText text={link.label} alt={link.alt} altClassName="text-base" /> : link.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-px bg-glow-blue group-hover:w-full transition-all duration-300" />
                 </button>
               </li>

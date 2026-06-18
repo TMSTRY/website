@@ -1,6 +1,7 @@
 import { client } from "@/sanity/lib/client";
 import { latestPostsQuery, postsCountQuery } from "@/sanity/lib/queries";
 import NewsList from "./NewsList";
+import HoverSwapText from "./HoverSwapText";
 
 export default async function NewsSection() {
   // Tag-based ISR: the homepage is statically rendered / edge-cached and only
@@ -33,7 +34,7 @@ export default async function NewsSection() {
               className="text-[9px] tracking-widest uppercase"
               style={{ letterSpacing: "0.4em", color: "rgba(79,195,247,0.8)" }}
             >
-              News &amp; Updates
+              <HoverSwapText text="News & Updates" alt="Gossip" altClassName="text-sm" />
             </span>
           </div>
           <h2

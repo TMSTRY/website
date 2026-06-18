@@ -3,6 +3,7 @@ import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { newPostsQuery } from "@/sanity/lib/queries";
 import NewsList from "@/components/NewsList";
+import HoverSwapText from "@/components/HoverSwapText";
 
 export const metadata: Metadata = {
   title: "News — TMSTRY",
@@ -50,7 +51,7 @@ export default async function NewsArchivePage() {
               className="text-[9px] tracking-widest uppercase"
               style={{ letterSpacing: "0.4em", color: "rgba(79,195,247,0.8)" }}
             >
-              News &amp; Updates
+              <HoverSwapText text="News & Updates" alt="Gossip" altClassName="text-sm" />
             </span>
           </div>
           <h1
