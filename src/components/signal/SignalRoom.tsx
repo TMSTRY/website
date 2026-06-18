@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import { useStaticCanvas } from "@/hooks/useStaticCanvas";
 import { useAmbientAudio } from "@/hooks/useAmbientAudio";
 import RoomDust from "./RoomDust";
+import SignalYouTube from "./SignalYouTube";
 import { useSignalRoom } from "@/context/SignalRoomContext";
 import { useModalChrome } from "@/hooks/useModalChrome";
 import { getYouTubeId } from "@/components/newsTypes";
@@ -183,14 +184,6 @@ export default function SignalRoom() {
     return () => { clearInterval(iv); clearTimeout(hide); };
   }, []);
 
-  const ytSrc = useMemo(() => {
-    if (!snippet?.videoId) return "";
-    const m = muted ? 1 : 0;
-    const start = Math.round(snippet.start);
-    const end = snippet.duration ? `&end=${Math.round(snippet.start + snippet.duration)}` : "";
-    return `https://www.youtube.com/embed/${snippet.videoId}?autoplay=1&mute=${m}&controls=0&start=${start}${end}&modestbranding=1&rel=0&playsinline=1`;
-  }, [snippet, muted]);
-
   const btn =
     "text-[10px] tracking-widest uppercase border border-white/15 bg-obsidian/55 backdrop-blur-sm px-4 py-2.5 text-soft-white/85 hover:text-soft-white hover:border-glow-blue/50 hover:bg-obsidian/75 transition-all duration-300";
 
@@ -297,13 +290,7 @@ export default function SignalRoom() {
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               ) : snippet?.videoId ? (
-                <iframe
-                  key={`${snippet.videoId}-${snippet.start}-${muted}`}
-                  src={ytSrc}
-                  title="Intercepted transmission"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  className="absolute inset-0 w-full h-full border-0"
-                />
+                <SignalYouTube videoId={snippet.videoId} start={snippet.start} duration={snippet.duration} muted={muted} />
               ) : null}
 
               {/* hidden corrupted message */}
