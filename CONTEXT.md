@@ -87,7 +87,9 @@ tmstry-com/
 │
 ├── public/
 │   ├── hero-website.png                — Hero achtergrondafbeelding (hoge kwaliteit, groot)
-│   ├── primary logo.png                — Primair logo — gebruikt in MusicSection (artist image)
+│   ├── headshot.png                    — MusicSection artist image (default, transparant)
+│   ├── ai-headshot.jpg                 — MusicSection: verschijnt met glitch bij hover
+│   ├── primary logo.png                — Primair logo (momenteel niet meer in gebruik)
 │   ├── favicon.svg                     — SVG favicon (primair)
 │   ├── favicon-32.png                  — PNG favicon 32×32 (fallback)
 │   ├── apple-touch-icon.png            — Apple touch icon 180×180

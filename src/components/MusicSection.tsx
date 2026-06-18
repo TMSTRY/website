@@ -44,15 +44,26 @@ export default function MusicSection() {
           {/* ── Left: Artist identity ── */}
           <FadeInSection delay={0.05} className="flex flex-col gap-10">
 
-            {/* Artist image */}
-            <div className="relative w-full aspect-square max-w-[280px] overflow-hidden border border-white/[0.08]">
+            {/* Artist image — headshot, glitches to AI headshot on hover */}
+            <div className="group relative w-full aspect-square max-w-[280px] overflow-hidden border border-white/[0.08]">
               <Image
-                src="/primary logo.png"
+                src="/headshot.png"
                 alt="TMSTRY"
                 fill
                 quality={90}
-                className="object-cover"
+                sizes="280px"
+                className="object-cover transition-opacity duration-200 group-hover:opacity-0"
               />
+              <Image
+                src="/ai-headshot.jpg"
+                alt=""
+                aria-hidden="true"
+                fill
+                quality={85}
+                sizes="280px"
+                className="glitch-portrait absolute inset-0 object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              />
+              <span className="absolute inset-0 crt-scanlines opacity-0 group-hover:opacity-25 transition-opacity duration-200 pointer-events-none" />
               <motion.div
                 className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-3/4 h-16 blur-2xl -z-10"
                 style={{ background: "radial-gradient(ellipse, rgba(156,106,255,0.25) 0%, transparent 70%)" }}

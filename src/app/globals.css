@@ -221,6 +221,22 @@ body {
   font-family: var(--font-grunge), cursive;
 }
 
+/* Portrait glitch on hover (Music section headshot) */
+@keyframes img-glitch {
+  0%   { transform: translate(0, 0); filter: none; clip-path: inset(0 0 0 0); }
+  15%  { transform: translate(-3px, 1px); filter: drop-shadow(3px 0 rgba(79,195,247,0.7)) drop-shadow(-3px 0 rgba(224,64,251,0.7)); clip-path: inset(8% 0 62% 0); }
+  35%  { transform: translate(3px, -1px); clip-path: inset(54% 0 18% 0); }
+  55%  { transform: translate(-2px, 0); filter: drop-shadow(2px 0 rgba(79,195,247,0.6)) drop-shadow(-2px 0 rgba(224,64,251,0.6)); clip-path: inset(30% 0 40% 0); }
+  75%  { transform: translate(1px, 1px); clip-path: inset(0 0 0 0); }
+  100% { transform: translate(0, 0); filter: none; clip-path: inset(0 0 0 0); }
+}
+.group:hover .glitch-portrait {
+  animation: img-glitch 0.5s steps(2, end) 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .group:hover .glitch-portrait { animation: none; }
+}
+
 /* ─── Signal / CRT easter egg ──────────────────────────────────────────────── */
 .signal-label-flicker {
   animation: signal-label-flicker 6s steps(1) infinite;
