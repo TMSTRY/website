@@ -7,12 +7,12 @@ import NavSignalTV from "./signal/NavSignalTV";
 import HoverSwapText from "./HoverSwapText";
 
 const navLinks: { href: string; label: string; alt?: string }[] = [
-  { href: "#music", label: "Music" },
-  { href: "#video", label: "Video" },
-  { href: "#about", label: "About" },
-  { href: "#press", label: "Press" },
+  { href: "#music", label: "Music", alt: "Racket" },
+  { href: "#video", label: "Video", alt: "Reruns" },
+  { href: "#about", label: "About", alt: "Ego" },
+  { href: "#press", label: "Press", alt: "Crap" },
   { href: "#news", label: "News", alt: "Gossip" },
-  { href: "#connect", label: "Connect" },
+  { href: "#connect", label: "Connect", alt: "Spam" },
 ];
 
 export default function Nav() {
