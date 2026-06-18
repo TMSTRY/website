@@ -170,13 +170,16 @@ export default function SocialSection() {
 
         {/* Email contact */}
         <FadeInSection delay={0.4} className="mt-12 text-center">
-          <div className="inline-flex flex-col items-center gap-2">
-            <p className="text-silver/40 text-[10px] tracking-widest uppercase" style={{ letterSpacing: "0.3em" }}>
-              Bookings & Press
+          <div className="inline-flex flex-col items-center gap-1.5">
+            <p className="text-soft-white/85 text-sm md:text-base" style={{ letterSpacing: "0.02em" }}>
+              Got something on your plate? Work for hire?
+            </p>
+            <p className="text-silver/40 text-xs italic">
+              Or just here to hate? The inbox has thick skin.
             </p>
             <a
               href="mailto:contact@tmstry.com"
-              className="text-soft-white/70 hover:text-soft-white text-sm tracking-wide transition-colors duration-300 underline underline-offset-4 decoration-white/20 hover:decoration-glow-blue/40"
+              className="mt-3 text-soft-white/70 hover:text-soft-white text-sm tracking-wide transition-colors duration-300 underline underline-offset-4 decoration-white/20 hover:decoration-glow-blue/40"
             >
               contact@tmstry.com
             </a>
