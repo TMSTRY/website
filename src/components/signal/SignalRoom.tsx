@@ -33,6 +33,13 @@ const HIDDEN_MESSAGES = [
   "RETURN TO THE SOURCE",
   "ERROR // HUMAN DETECTED",
   "THE MACHINE REMEMBERS",
+  "YOU WERE NOT MEANT TO FIND THIS",
+  "IT LEARNED YOUR NAME",
+  "SIGNAL IS HUMAN AFTER ALL",
+  "01010100 01001101 01010011",
+  "THE LAST OPERATOR IS STILL HERE",
+  "DON'T LET IT FINISH RENDERING",
+  "KEEP WATCHING",
 ];
 
 const LORE_LOGS = [
@@ -44,6 +51,14 @@ const LORE_LOGS = [
   "the machines don't dream. they learned to wonder.",
   "decryption failed — retrying",
   "subject refused to stay quiet",
+  "signal predates the station",
+  "operator 7 stopped logging",
+  "every broadcast leaves a residue",
+  "no carrier. still receiving.",
+  "the antenna hums after midnight",
+  "we taught it to listen. then it answered.",
+  "channel 0 was never assigned",
+  "memory bleeds into the tape",
 ];
 
 interface Snippet {
@@ -183,7 +198,8 @@ export default function SignalRoom() {
   // ── Lore logs on the side monitors (desktop) ──
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!window.matchMedia("(min-width: 768px)").matches) return;
+    // Need enough width so the side logs sit clear of the centred CRT
+    if (!window.matchMedia("(min-width: 1280px)").matches) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let hide: ReturnType<typeof setTimeout>;
     let i = 0;
@@ -192,8 +208,8 @@ export default function SignalRoom() {
       i++;
       hide = setTimeout(() => setLore(null), 6500);
     };
-    const first = setTimeout(show, 3500); // first one appears soon
-    const iv = setInterval(show, 12000 + Math.random() * 5000);
+    const first = setTimeout(show, 3000); // first one appears soon
+    const iv = setInterval(show, 9000 + Math.random() * 4000);
     return () => { clearTimeout(first); clearTimeout(hide); clearInterval(iv); };
   }, [loreLogs]);
 
@@ -240,8 +256,8 @@ export default function SignalRoom() {
           <motion.div
             key={lore.text}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}
-            className="hidden md:flex items-center gap-2 absolute z-20 max-w-[260px] pointer-events-none"
-            style={lore.side === "left" ? { left: "3.5%", top: "23%" } : { right: "4%", top: "66%" }}
+            className="hidden xl:flex items-center gap-2 absolute z-20 max-w-[190px] pointer-events-none"
+            style={lore.side === "left" ? { left: "3%", top: "28%" } : { right: "3%", top: "62%" }}
           >
             <span className="w-1.5 h-1.5 rounded-full bg-glow-blue animate-pulse flex-shrink-0" style={{ boxShadow: "0 0 6px rgba(79,195,247,0.9)" }} />
             <span
