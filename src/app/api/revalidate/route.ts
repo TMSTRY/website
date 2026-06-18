@@ -11,5 +11,6 @@ export async function POST(req: NextRequest) {
   // Invalidate cached CMS-driven data; pages re-render on next request.
   revalidateTag("newsPost");
   revalidateTag("transmission");
-  return NextResponse.json({ revalidated: true, tags: ["newsPost", "transmission"], now: Date.now() });
+  revalidateTag("signalLog");
+  return NextResponse.json({ revalidated: true, tags: ["newsPost", "transmission", "signalLog"], now: Date.now() });
 }

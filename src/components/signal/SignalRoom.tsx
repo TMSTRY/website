@@ -11,6 +11,7 @@ import { useModalChrome } from "@/hooks/useModalChrome";
 import { getYouTubeId } from "@/components/newsTypes";
 import type { YTVideo } from "@/app/api/youtube/route";
 import type { Transmission } from "@/app/api/transmissions/route";
+import type { SignalLog } from "@/app/api/lore/route";
 
 const CHANNELS = [
   { id: "CH01", label: "Music Videos" },
@@ -68,6 +69,8 @@ export default function SignalRoom() {
   const [muted, setMuted] = useState(false); // audio on the moment you enter
   const [glitchMsg, setGlitchMsg] = useState<string | null>(null);
   const [lore, setLore] = useState<{ text: string; side: "left" | "right" } | null>(null);
+  const [loreLogs, setLoreLogs] = useState<string[]>(LORE_LOGS);
+  const [hiddenMsgs, setHiddenMsgs] = useState<string[]>(HIDDEN_MESSAGES);
 
   const staticRef = useRef<HTMLCanvasElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -93,8 +96,17 @@ export default function SignalRoom() {
     Promise.all([
       fetch("/api/transmissions").then((r) => r.json()).catch(() => []),
       fetch("/api/youtube?limit=15").then((r) => r.json()).catch(() => []),
-    ]).then(([trans, yt]: [Transmission[], YTVideo[]]) => {
+      fetch("/api/lore").then((r) => r.json()).catch(() => []),
+    ]).then(([trans, yt, lore]: [Transmission[], YTVideo[], SignalLog[]]) => {
       if (!active) return;
+
+      // Lore from Sanity (fall back to hardcoded when empty)
+      if (Array.isArray(lore) && lore.length) {
+        const logs = lore.filter((l) => l.kind === "log").map((l) => l.text);
+        const hidden = lore.filter((l) => l.kind === "hidden").map((l) => l.text);
+        if (logs.length) setLoreLogs(logs);
+        if (hidden.length) setHiddenMsgs(hidden);
+      }
       const grouped: Record<string, Snippet[]> = {};
       (Array.isArray(trans) ? trans : []).forEach((t) => {
         const videoId = t.youtubeUrl ? getYouTubeId(t.youtubeUrl) ?? undefined : undefined;
@@ -161,12 +173,12 @@ export default function SignalRoom() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let on: ReturnType<typeof setTimeout>;
     const tick = () => {
-      setGlitchMsg(HIDDEN_MESSAGES[Math.floor(Math.random() * HIDDEN_MESSAGES.length)]);
+      setGlitchMsg(hiddenMsgs[Math.floor(Math.random() * hiddenMsgs.length)]);
       on = setTimeout(() => setGlitchMsg(null), 700 + Math.random() * 500);
     };
     const iv = setInterval(tick, 4500 + Math.random() * 4000);
     return () => { clearInterval(iv); clearTimeout(on); };
-  }, [corruptedActive, switching]);
+  }, [corruptedActive, switching, hiddenMsgs]);
 
   // ── Lore logs on the side monitors (desktop) ──
   useEffect(() => {
@@ -175,14 +187,15 @@ export default function SignalRoom() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let hide: ReturnType<typeof setTimeout>;
     let i = 0;
-    const tick = () => {
-      setLore({ text: LORE_LOGS[Math.floor(Math.random() * LORE_LOGS.length)], side: i % 2 ? "right" : "left" });
+    const show = () => {
+      setLore({ text: loreLogs[Math.floor(Math.random() * loreLogs.length)], side: i % 2 ? "right" : "left" });
       i++;
-      hide = setTimeout(() => setLore(null), 5000);
+      hide = setTimeout(() => setLore(null), 6500);
     };
-    const iv = setInterval(tick, 11000 + Math.random() * 6000);
-    return () => { clearInterval(iv); clearTimeout(hide); };
-  }, []);
+    const first = setTimeout(show, 3500); // first one appears soon
+    const iv = setInterval(show, 12000 + Math.random() * 5000);
+    return () => { clearTimeout(first); clearTimeout(hide); clearInterval(iv); };
+  }, [loreLogs]);
 
   const btn =
     "text-[10px] tracking-widest uppercase border border-white/15 bg-obsidian/55 backdrop-blur-sm px-4 py-2.5 text-soft-white/85 hover:text-soft-white hover:border-glow-blue/50 hover:bg-obsidian/75 transition-all duration-300";
@@ -226,11 +239,17 @@ export default function SignalRoom() {
         {lore && (
           <motion.div
             key={lore.text}
-            initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 1.2 }}
-            className="hidden md:block absolute z-20 max-w-[200px] font-mono text-[9px] tracking-[0.12em] uppercase text-glow-blue/50 pointer-events-none"
-            style={lore.side === "left" ? { left: "4%", top: "30%" } : { right: "5%", top: "58%" }}
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}
+            className="hidden md:flex items-center gap-2 absolute z-20 max-w-[260px] pointer-events-none"
+            style={lore.side === "left" ? { left: "3.5%", top: "23%" } : { right: "4%", top: "66%" }}
           >
-            <span className="signal-label-flicker">{lore.text}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-glow-blue animate-pulse flex-shrink-0" style={{ boxShadow: "0 0 6px rgba(79,195,247,0.9)" }} />
+            <span
+              className="font-mono text-[10px] tracking-[0.12em] uppercase text-glow-blue/90 px-2 py-1"
+              style={{ background: "rgba(5,6,8,0.5)", textShadow: "0 0 10px rgba(79,195,247,0.5)" }}
+            >
+              {lore.text}
+            </span>
           </motion.div>
         )}
       </AnimatePresence>

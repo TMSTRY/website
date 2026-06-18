@@ -36,6 +36,13 @@ export const postBySlugQuery = groq`
   }
 `;
 
+// Signal Room lore (side-monitor logs + hidden corrupted messages)
+export const loreQuery = groq`
+  *[_type == "signalLog" && active != false] | order(coalesce(order, 999) asc, _createdAt asc){
+    text, kind
+  }
+`;
+
 // All published slugs (for generateStaticParams)
 export const postSlugsQuery = groq`
   *[_type == "newsPost" && published != false && defined(slug.current)]{ "slug": slug.current }
