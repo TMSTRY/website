@@ -92,7 +92,7 @@ export default function SignalRoom() {
     let active = true;
     Promise.all([
       fetch("/api/transmissions").then((r) => r.json()).catch(() => []),
-      fetch("/api/youtube").then((r) => r.json()).catch(() => []),
+      fetch("/api/youtube?limit=15").then((r) => r.json()).catch(() => []),
     ]).then(([trans, yt]: [Transmission[], YTVideo[]]) => {
       if (!active) return;
       const grouped: Record<string, Snippet[]> = {};
@@ -139,11 +139,11 @@ export default function SignalRoom() {
     setTimeout(apply, 320);
     setTimeout(() => setSwitching(false), 720);
   }, []);
-  const switchChannel = (i: number) => burst(() => { setChannelIdx(i); setSnippetIdx(Math.floor(Math.random() * 8)); });
+  const switchChannel = (i: number) => burst(() => { setChannelIdx(i); setSnippetIdx(Math.floor(Math.random() * 50)); });
   const nextSnippet = useCallback(() => burst(() => setSnippetIdx((n) => n + 1)), [burst]);
   const randomSignal = () => burst(() => {
     setChannelIdx(Math.floor(Math.random() * CHANNELS.length));
-    setSnippetIdx(Math.floor(Math.random() * 8));
+    setSnippetIdx(Math.floor(Math.random() * 50));
   });
 
   // ── Auto-advance snippets ──

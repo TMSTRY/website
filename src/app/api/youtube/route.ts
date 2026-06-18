@@ -30,7 +30,12 @@ async function isShort(videoId: string): Promise<boolean> {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  // ?limit=N (1–15). The YouTube RSS feed only exposes the latest ~15 videos.
+  const limit = Math.min(
+    15,
+    Math.max(1, parseInt(new URL(req.url).searchParams.get("limit") ?? "4", 10) || 4)
+  );
   try {
     const rss = await fetch(
       `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`,
@@ -63,8 +68,8 @@ export async function GET() {
     const shortChecks = await Promise.all(raw.map((v) => isShort(v.id)));
     const longForm = raw.filter((_, i) => !shortChecks[i]);
 
-    // Return first 4 long-form videos (featured = index 0, grid = 1–3)
-    const entries: YTVideo[] = longForm.slice(0, 4).map((v) => ({
+    // Return up to `limit` long-form videos (VideoSection uses 4; Signal Room asks for 15)
+    const entries: YTVideo[] = longForm.slice(0, limit).map((v) => ({
       ...v,
       thumbnail: `https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`,
       url: `https://www.youtube.com/watch?v=${v.id}`,
