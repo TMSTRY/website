@@ -5,14 +5,15 @@ import Image from "next/image";
 
 type Track = { title: string; cover: string; src?: string };
 
-// Fill cover + src per track (drop files in /public/tracks/). Without src the
-// transport shows but won't play; covers/titles still cycle with next/back.
 const TRACKS: Track[] = [
-  { title: "False Dreams", cover: "/apple-touch-icon.png" },
-  { title: "No Defeat", cover: "/apple-touch-icon.png" },
-  { title: "System Shock", cover: "/apple-touch-icon.png" },
-  { title: "Bars to Bridges", cover: "/apple-touch-icon.png" },
-  { title: "Hollow Shape", cover: "/apple-touch-icon.png" },
+  { title: "Not Built to Behave", cover: "/tracks/not-built-to-behave.webp", src: "/tracks/not-built-to-behave.mp3" },
+  { title: "Dead Air", cover: "/tracks/dead-air.webp", src: "/tracks/dead-air.mp3" },
+  { title: "Calibrated Smile", cover: "/tracks/calibrated-smile.webp", src: "/tracks/calibrated-smile.mp3" },
+  { title: "Hollow Shape", cover: "/tracks/hollow-shape.webp", src: "/tracks/hollow-shape.mp3" },
+  { title: "Quiet Tension", cover: "/tracks/quiet-tension.webp", src: "/tracks/quiet-tension.mp3" },
+  { title: "Lovin on da Ladies", cover: "/tracks/lovin-on-da-ladies.webp", src: "/tracks/lovin-on-da-ladies.mp3" },
+  { title: "Outdated", cover: "/tracks/outdated.webp", src: "/tracks/outdated.mp3" },
+  { title: "This Ain't Easy Street", cover: "/tracks/this-aint-easy-street.webp", src: "/tracks/this-aint-easy-street.mp3" },
 ];
 
 function Eq({ playing }: { playing: boolean }) {
