@@ -1,9 +1,39 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useModalChrome } from "@/hooks/useModalChrome";
 
 type Track = { title: string; cover: string; src?: string };
+
+function CoverLightbox({ cover, title, onClose }: { cover: string; title: string; onClose: () => void }) {
+  useModalChrome(onClose);
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+      className="fixed inset-0 z-[120] flex items-center justify-center p-6"
+      onClick={onClose}
+      role="dialog" aria-modal="true" aria-label={`${title} cover`}
+    >
+      <div className="absolute inset-0 bg-obsidian/92 backdrop-blur-xl" />
+      <motion.div
+        initial={{ scale: 0.93, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.93, opacity: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="relative" onClick={(e) => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute -top-9 right-0 text-silver/60 hover:text-soft-white text-xs tracking-widest uppercase transition-colors" style={{ letterSpacing: "0.2em" }}>
+          Close ×
+        </button>
+        <div className="relative w-[80vw] max-w-[460px] aspect-square overflow-hidden border border-white/10" style={{ boxShadow: "0 0 60px rgba(79,195,247,0.15)" }}>
+          <Image src={cover} alt={title} fill sizes="460px" className="object-cover" />
+          <div className="absolute inset-0 crt-scanlines opacity-[0.12] pointer-events-none" />
+        </div>
+        <p className="mt-4 text-center font-mono text-[11px] tracking-[0.25em] uppercase text-silver/70">{title}</p>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 const TRACKS: Track[] = [
   { title: "Not Built to Behave", cover: "/tracks/not-built-to-behave.webp", src: "/tracks/not-built-to-behave.mp3" },
@@ -41,6 +71,7 @@ export default function NowPlaying() {
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [zoom, setZoom] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const track = TRACKS[index];
 
@@ -92,9 +123,14 @@ export default function NowPlaying() {
       <p className="font-display font-bold text-glow-blue text-xl tracking-wide mt-1 line-clamp-1">{track.title}</p>
 
       <div className="flex items-center gap-3 mt-3">
-        <span className="relative w-12 h-12 flex-shrink-0 overflow-hidden border border-white/10">
-          <Image key={track.cover} src={track.cover} alt="" fill sizes="48px" className="object-cover" />
-        </span>
+        <button
+          onClick={() => setZoom(true)}
+          aria-label="Enlarge cover"
+          className="group/cv relative w-12 h-12 flex-shrink-0 overflow-hidden border border-white/10 cursor-zoom-in"
+        >
+          <Image key={track.cover} src={track.cover} alt={track.title} fill sizes="48px" className="object-cover transition-transform duration-300 group-hover/cv:scale-110" />
+          <span className="absolute inset-0 bg-obsidian/0 group-hover/cv:bg-obsidian/20 transition-colors" />
+        </button>
         <Eq playing={playing} />
       </div>
 
@@ -142,6 +178,10 @@ export default function NowPlaying() {
         onDurationChange={(e) => setDuration(e.currentTarget.duration)}
         preload="none"
       />
+
+      <AnimatePresence>
+        {zoom && <CoverLightbox cover={track.cover} title={track.title} onClose={() => setZoom(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
