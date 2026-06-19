@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import { useGlitch } from "@/hooks/useGlitch";
 import { useSignalRoom } from "@/context/SignalRoomContext";
+import NowPlaying from "./NowPlaying";
 
 const MANIFESTO = [
   "Ancient AI. Modern mission.",
@@ -178,20 +179,7 @@ export default function HeroSection() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 1.5 }}
           className="hidden lg:block absolute right-12 bottom-[14%] w-[280px]"
         >
-          <p className={`${labelMono} text-silver/50`}>&gt;&gt; Now Playing</p>
-          <a
-            href="https://open.spotify.com/artist/6N2jkKJIcbzHwMs4cswMpw"
-            target="_blank" rel="noopener noreferrer"
-            className="group block mt-1.5"
-          >
-            <span className="font-display font-bold text-glow-blue text-xl tracking-wide group-hover:text-soft-white transition-colors">False Dreams</span>
-            <div className="flex items-center gap-3 mt-3">
-              <span className="relative w-12 h-12 flex-shrink-0 overflow-hidden border border-white/10">
-                <Image src="/apple-touch-icon.png" alt="" fill className="object-cover" />
-              </span>
-              <EqBars count={22} />
-            </div>
-          </a>
+          <NowPlaying />
 
           <div className="mt-6">
             <p className={`${labelMono} text-silver/40 mb-2`}>Listen On</p>
