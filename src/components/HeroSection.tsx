@@ -19,6 +19,14 @@ export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
 
+  // Pause the hero video for visitors who prefer reduced motion (poster stays)
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    if (videoRef.current && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      videoRef.current.pause();
+    }
+  }, []);
+
   // Glitch ref — cast to any so we can attach to motion.h1
   const glitchRef = useGlitch({ intervalMs: 4500, jitter: 0.8 });
 
@@ -28,21 +36,40 @@ export default function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-obsidian"
       aria-label="Hero"
     >
-      {/* ── Layer 1: Cinematic background photo ── */}
+      {/* ── Layer 1: Cinematic background (video on desktop, poster on mobile) ── */}
       <motion.div
         className="absolute inset-0 z-0"
         style={{ y: yBg, scale: scaleBg }}
       >
-        <Image
-          src="/hero-website.png"
-          alt=""
-          fill
-          priority
-          quality={75}
-          sizes="100vw"
-          className="object-cover object-center"
+        {/* Desktop: looping muted video. Falls back to the poster until /hero.mp4 exists. */}
+        <video
+          ref={videoRef}
+          className="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
           style={{ opacity: "var(--hero-img-opacity)" } as React.CSSProperties}
-        />
+          poster="/hero-website.png"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+        >
+          <source src="/hero.mp4" type="video/mp4" />
+        </video>
+
+        {/* Mobile: static poster (saves data/battery) */}
+        <div className="md:hidden absolute inset-0">
+          <Image
+            src="/hero-website.png"
+            alt=""
+            fill
+            priority
+            quality={75}
+            sizes="100vw"
+            className="object-cover object-center"
+            style={{ opacity: "var(--hero-img-opacity)" } as React.CSSProperties}
+          />
+        </div>
+
         {/* Top/bottom fade — uses CSS var so it adapts to light/dark theme */}
         <div className="absolute inset-0 hero-fade-vertical" />
         {/* Side fades */}
