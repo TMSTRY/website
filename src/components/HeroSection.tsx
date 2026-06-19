@@ -46,7 +46,7 @@ export default function HeroSection() {
           ref={videoRef}
           className="hidden md:block absolute inset-0 w-full h-full object-cover object-center"
           style={{ opacity: "var(--hero-img-opacity)" } as React.CSSProperties}
-          poster="/hero-website.png"
+          poster="/hero-poster.jpg"
           autoPlay
           muted
           loop
@@ -59,7 +59,7 @@ export default function HeroSection() {
         {/* Mobile: static poster (saves data/battery) */}
         <div className="md:hidden absolute inset-0">
           <Image
-            src="/hero-website.png"
+            src="/hero-poster.jpg"
             alt=""
             fill
             priority
