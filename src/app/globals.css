@@ -233,6 +233,16 @@ body {
   font-family: var(--font-grunge), cursive;
 }
 
+/* HUD equalizer bars */
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar {
+  transform-origin: bottom;
+  animation: eq 0.9s ease-in-out infinite;
+}
+
 /* Glitch jitter on the dirty hover word */
 @keyframes swap-glitch {
   0%, 100% { transform: translate(-50%, -50%) skewX(-12deg) rotate(-3deg); text-shadow: 0 0 14px currentColor; }
