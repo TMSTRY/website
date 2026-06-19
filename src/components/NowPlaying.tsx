@@ -38,6 +38,8 @@ function Eq({ playing }: { playing: boolean }) {
 export default function NowPlaying() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const track = TRACKS[index];
 
@@ -51,6 +53,12 @@ export default function NowPlaying() {
     }
   }, [playing, index, track.src]);
 
+  // Reset the timeline when the track changes
+  useEffect(() => {
+    setCurrentTime(0);
+    setDuration(0);
+  }, [index]);
+
   const toggle = () => {
     if (!track.src) return; // no audio yet — transport is visible but inert
     setPlaying((p) => !p);
@@ -58,6 +66,23 @@ export default function NowPlaying() {
   const next = () => setIndex((i) => (i + 1) % TRACKS.length);
   const prev = () => setIndex((i) => (i - 1 + TRACKS.length) % TRACKS.length);
 
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const a = audioRef.current;
+    if (!a || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    a.currentTime = frac * duration;
+    setCurrentTime(frac * duration);
+  };
+
+  const fmt = (s: number) => {
+    if (!isFinite(s) || s < 0) return "0:00";
+    const m = Math.floor(s / 60);
+    const ss = Math.floor(s % 60).toString().padStart(2, "0");
+    return `${m}:${ss}`;
+  };
+
+  const progress = duration ? (currentTime / duration) * 100 : 0;
   const ctrl = "text-silver/55 hover:text-soft-white transition-colors duration-200";
 
   return (
@@ -70,6 +95,26 @@ export default function NowPlaying() {
           <Image key={track.cover} src={track.cover} alt="" fill sizes="48px" className="object-cover" />
         </span>
         <Eq playing={playing} />
+      </div>
+
+      {/* Progress bar (click to seek) */}
+      <div className="mt-3">
+        <div
+          onClick={seek}
+          className="group relative h-[3px] bg-white/10 cursor-pointer"
+          role="slider"
+          aria-label="Seek"
+          aria-valuemin={0}
+          aria-valuemax={Math.round(duration)}
+          aria-valuenow={Math.round(currentTime)}
+        >
+          <div className="absolute inset-y-0 left-0 bg-glow-blue/80" style={{ width: `${progress}%` }} />
+          <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-glow-blue opacity-0 group-hover:opacity-100 transition-opacity" style={{ left: `calc(${progress}% - 4px)` }} />
+        </div>
+        <div className="flex items-center justify-between mt-1.5 font-mono text-[9px] tracking-wider text-silver/40">
+          <span>{fmt(currentTime)}</span>
+          <span>{fmt(duration)}</span>
+        </div>
       </div>
 
       {/* Transport */}
@@ -87,7 +132,15 @@ export default function NowPlaying() {
         </button>
       </div>
 
-      <audio ref={audioRef} src={track.src} onEnded={next} preload="none" />
+      <audio
+        ref={audioRef}
+        src={track.src}
+        onEnded={next}
+        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onDurationChange={(e) => setDuration(e.currentTarget.duration)}
+        preload="none"
+      />
     </div>
   );
 }
