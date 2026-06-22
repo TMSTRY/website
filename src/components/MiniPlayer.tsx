@@ -8,7 +8,7 @@ import CoverLightbox from "./CoverLightbox";
 
 /** Floating compact player that appears once you scroll past the hero. */
 export default function MiniPlayer() {
-  const { track, playing, currentTime, duration, toggle, next, prev } = usePlayer();
+  const { track, playing, currentTime, duration, toggle, pause, next, prev } = usePlayer();
   const [pastHero, setPastHero] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [zoom, setZoom] = useState(false);
@@ -47,8 +47,8 @@ export default function MiniPlayer() {
 
             {/* close */}
             <button
-              onClick={() => setDismissed(true)}
-              aria-label="Hide player"
+              onClick={() => { pause(); setDismissed(true); }}
+              aria-label="Stop and close player"
               className="absolute top-1.5 right-1.5 z-10 text-silver/40 hover:text-soft-white text-xs leading-none p-1 transition-colors"
             >
               ×

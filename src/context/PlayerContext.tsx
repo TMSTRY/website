@@ -31,6 +31,7 @@ interface PlayerValue {
   currentTime: number;
   duration: number;
   toggle: () => void;
+  pause: () => void;
   next: () => void;
   prev: () => void;
   seek: (frac: number) => void;
@@ -75,6 +76,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     if (!track.src) return;
     setPlaying((p) => !p);
   }, [track.src]);
+  const pause = useCallback(() => setPlaying(false), []);
   const next = useCallback(() => setPos((p) => (p + 1) % TRACKS.length), []);
   const prev = useCallback(() => setPos((p) => (p - 1 + TRACKS.length) % TRACKS.length), []);
   const seek = useCallback((frac: number) => {
@@ -85,7 +87,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PlayerContext.Provider value={{ track, playing, currentTime, duration, toggle, next, prev, seek }}>
+    <PlayerContext.Provider value={{ track, playing, currentTime, duration, toggle, pause, next, prev, seek }}>
       {children}
       <audio
         ref={audioRef}
