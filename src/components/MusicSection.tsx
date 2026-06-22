@@ -47,7 +47,7 @@ export default function MusicSection() {
             {/* Artist image — headshot, glitches to AI headshot on hover */}
             <div className="group relative w-full aspect-square max-w-[280px] overflow-hidden border border-white/[0.08]">
               <Image
-                src="/headshot.png"
+                src="/photos/studio3.jpg"
                 alt="TMSTRY"
                 fill
                 quality={90}
