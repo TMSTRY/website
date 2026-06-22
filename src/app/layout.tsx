@@ -3,8 +3,10 @@ import { Inter, JetBrains_Mono, Rubik_Distressed } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { SignalRoomProvider } from "@/context/SignalRoomContext";
+import { PlayerProvider } from "@/context/PlayerContext";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConsoleSignal from "@/components/ConsoleSignal";
+import MiniPlayer from "@/components/MiniPlayer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -104,7 +106,12 @@ export default function RootLayout({
         <ScrollProgress />
         <ConsoleSignal />
         <ThemeProvider>
-          <SignalRoomProvider>{children}</SignalRoomProvider>
+          <SignalRoomProvider>
+            <PlayerProvider>
+              {children}
+              <MiniPlayer />
+            </PlayerProvider>
+          </SignalRoomProvider>
         </ThemeProvider>
       </body>
     </html>

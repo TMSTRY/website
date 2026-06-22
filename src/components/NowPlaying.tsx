@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useModalChrome } from "@/hooks/useModalChrome";
-
-type Track = { title: string; cover: string; src?: string };
+import { usePlayer } from "@/context/PlayerContext";
 
 function CoverLightbox({ cover, title, onClose }: { cover: string; title: string; onClose: () => void }) {
   useModalChrome(onClose);
@@ -35,17 +34,6 @@ function CoverLightbox({ cover, title, onClose }: { cover: string; title: string
   );
 }
 
-const TRACKS: Track[] = [
-  { title: "Not Built to Behave", cover: "/tracks/not-built-to-behave.webp", src: "/tracks/not-built-to-behave.mp3" },
-  { title: "Dead Air", cover: "/tracks/dead-air.webp", src: "/tracks/dead-air.mp3" },
-  { title: "Calibrated Smile", cover: "/tracks/calibrated-smile.webp", src: "/tracks/calibrated-smile.mp3" },
-  { title: "Hollow Shape", cover: "/tracks/hollow-shape.webp", src: "/tracks/hollow-shape.mp3" },
-  { title: "Quiet Tension", cover: "/tracks/quiet-tension.webp", src: "/tracks/quiet-tension.mp3" },
-  { title: "Lovin on da Ladies", cover: "/tracks/lovin-on-da-ladies.webp", src: "/tracks/lovin-on-da-ladies.mp3" },
-  { title: "Outdated", cover: "/tracks/outdated.webp", src: "/tracks/outdated.mp3" },
-  { title: "This Ain't Easy Street", cover: "/tracks/this-aint-easy-street.webp", src: "/tracks/this-aint-easy-street.mp3" },
-];
-
 function Eq({ playing }: { playing: boolean }) {
   return (
     <div className="flex items-end gap-[2px] h-6" aria-hidden="true">
@@ -67,44 +55,12 @@ function Eq({ playing }: { playing: boolean }) {
 }
 
 export default function NowPlaying() {
-  const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const { track, playing, currentTime, duration, toggle, next, prev, seek } = usePlayer();
   const [zoom, setZoom] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const track = TRACKS[index];
 
-  useEffect(() => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing && track.src) {
-      a.play().catch(() => setPlaying(false));
-    } else {
-      a.pause();
-    }
-  }, [playing, index, track.src]);
-
-  // Reset the timeline when the track changes
-  useEffect(() => {
-    setCurrentTime(0);
-    setDuration(0);
-  }, [index]);
-
-  const toggle = () => {
-    if (!track.src) return; // no audio yet — transport is visible but inert
-    setPlaying((p) => !p);
-  };
-  const next = () => setIndex((i) => (i + 1) % TRACKS.length);
-  const prev = () => setIndex((i) => (i - 1 + TRACKS.length) % TRACKS.length);
-
-  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
-    const a = audioRef.current;
-    if (!a || !duration) return;
+  const onSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const frac = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    a.currentTime = frac * duration;
-    setCurrentTime(frac * duration);
+    seek(Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width)));
   };
 
   const fmt = (s: number) => {
@@ -137,13 +93,9 @@ export default function NowPlaying() {
       {/* Progress bar (click to seek) */}
       <div className="mt-3">
         <div
-          onClick={seek}
+          onClick={onSeek}
           className="group relative h-[3px] bg-white/10 cursor-pointer"
-          role="slider"
-          aria-label="Seek"
-          aria-valuemin={0}
-          aria-valuemax={Math.round(duration)}
-          aria-valuenow={Math.round(currentTime)}
+          role="slider" aria-label="Seek" aria-valuemin={0} aria-valuemax={Math.round(duration)} aria-valuenow={Math.round(currentTime)}
         >
           <div className="absolute inset-y-0 left-0 bg-glow-blue/80" style={{ width: `${progress}%` }} />
           <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-glow-blue opacity-0 group-hover:opacity-100 transition-opacity" style={{ left: `calc(${progress}% - 4px)` }} />
@@ -168,16 +120,6 @@ export default function NowPlaying() {
           <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M16 6h2v12h-2zM5 6l10 6-10 6z" /></svg>
         </button>
       </div>
-
-      <audio
-        ref={audioRef}
-        src={track.src}
-        onEnded={next}
-        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
-        onDurationChange={(e) => setDuration(e.currentTarget.duration)}
-        preload="none"
-      />
 
       <AnimatePresence>
         {zoom && <CoverLightbox cover={track.cover} title={track.title} onClose={() => setZoom(false)} />}
