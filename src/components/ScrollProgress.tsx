@@ -10,11 +10,11 @@ export default function ScrollProgress() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 h-[2px] z-[60] origin-left"
+      className="fixed top-0 left-0 right-0 h-1 z-[60] origin-left"
       style={{
         scaleX,
-        background: "linear-gradient(90deg, rgba(79,195,247,0.9), rgba(224,64,251,0.9))",
-        boxShadow: "0 0 8px rgba(79,195,247,0.5)",
+        background: "linear-gradient(90deg, rgba(79,195,247,1), rgba(224,64,251,1))",
+        boxShadow: "0 0 10px rgba(79,195,247,0.7), 0 0 4px rgba(224,64,251,0.6)",
       }}
     />
   );
