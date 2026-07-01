@@ -112,5 +112,12 @@ export default function SignalYouTube({
     else { p.unMute(); p.setVolume(60); }
   }, [muted]);
 
-  return <div ref={hostRef} className="absolute inset-0 w-full h-full" />;
+  // The YouTube IFrame API replaces this inner node with its own <iframe>,
+  // detaching it from React's tree. Keep it inside a stable outer wrapper so
+  // React never tries to remove a node YouTube has already swapped out.
+  return (
+    <div className="absolute inset-0 w-full h-full">
+      <div ref={hostRef} className="w-full h-full" />
+    </div>
+  );
 }
