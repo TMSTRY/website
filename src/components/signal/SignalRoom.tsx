@@ -87,12 +87,15 @@ export default function SignalRoom() {
   const [lore, setLore] = useState<{ text: string; side: "left" | "right" } | null>(null);
   const [terminalOpen, setTerminalOpen] = useState(false);
 
-  // Arrived via "incoming transmission" — open the terminal right away
+  // Arrived via "incoming transmission" — open the terminal right away.
+  // No cleanup on this timer: clearWantTerminal() re-renders immediately and
+  // a cleanup would cancel the timeout before it ever fires.
+  const terminalHandled = useRef(false);
   useEffect(() => {
-    if (wantTerminal) {
-      const t = setTimeout(() => setTerminalOpen(true), 800);
+    if (wantTerminal && !terminalHandled.current) {
+      terminalHandled.current = true;
       clearWantTerminal();
-      return () => clearTimeout(t);
+      setTimeout(() => setTerminalOpen(true), 800);
     }
   }, [wantTerminal, clearWantTerminal]);
   const [loreLogs, setLoreLogs] = useState<string[]>(LORE_LOGS);
