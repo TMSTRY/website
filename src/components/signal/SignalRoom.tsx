@@ -74,7 +74,7 @@ interface Snippet {
 }
 
 export default function SignalRoom() {
-  const { close } = useSignalRoom();
+  const { close, wantTerminal, clearWantTerminal } = useSignalRoom();
   useModalChrome(close);
 
   const [byChannel, setByChannel] = useState<Record<string, Snippet[]>>({});
@@ -86,6 +86,15 @@ export default function SignalRoom() {
   const [glitchMsg, setGlitchMsg] = useState<string | null>(null);
   const [lore, setLore] = useState<{ text: string; side: "left" | "right" } | null>(null);
   const [terminalOpen, setTerminalOpen] = useState(false);
+
+  // Arrived via "incoming transmission" — open the terminal right away
+  useEffect(() => {
+    if (wantTerminal) {
+      const t = setTimeout(() => setTerminalOpen(true), 800);
+      clearWantTerminal();
+      return () => clearTimeout(t);
+    }
+  }, [wantTerminal, clearWantTerminal]);
   const [loreLogs, setLoreLogs] = useState<string[]>(LORE_LOGS);
   const [hiddenMsgs, setHiddenMsgs] = useState<string[]>(HIDDEN_MESSAGES);
 

@@ -7,6 +7,7 @@ import { PlayerProvider } from "@/context/PlayerContext";
 import ScrollProgress from "@/components/ScrollProgress";
 import ConsoleSignal from "@/components/ConsoleSignal";
 import MiniPlayer from "@/components/MiniPlayer";
+import IncomingTransmission from "@/components/IncomingTransmission";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -110,6 +111,7 @@ export default function RootLayout({
             <PlayerProvider>
               {children}
               <MiniPlayer />
+              <IncomingTransmission />
             </PlayerProvider>
           </SignalRoomProvider>
         </ThemeProvider>

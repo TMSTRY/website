@@ -141,7 +141,7 @@ export default function HeroSection() {
 
           <motion.button
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 1.4 }}
-            onClick={open}
+            onClick={() => open()}
             className="mt-8 px-7 py-3 border border-glow-pink/40 text-glow-pink text-[10px] md:text-xs tracking-[0.25em] uppercase hover:bg-glow-pink/10 hover:border-glow-pink/70 transition-all duration-300"
           >
             Enter the transmission

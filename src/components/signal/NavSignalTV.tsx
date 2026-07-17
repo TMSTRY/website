@@ -62,7 +62,7 @@ export default function NavSignalTV() {
 
   return (
     <button
-      onClick={open}
+      onClick={() => open()}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       aria-label="Unknown signal"
