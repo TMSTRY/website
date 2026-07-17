@@ -14,6 +14,8 @@ export const TRACKS: Track[] = [
   { title: "Lovin on da Ladies", cover: "/tracks/lovin-on-da-ladies.webp", src: "/tracks/lovin-on-da-ladies.mp3" },
   { title: "Outdated", cover: "/tracks/outdated.webp", src: "/tracks/outdated.mp3" },
   { title: "This Ain't Easy Street", cover: "/tracks/this-aint-easy-street.webp", src: "/tracks/this-aint-easy-street.mp3" },
+  { title: "The Fire Divide", cover: "/tracks/the-fire-divide.webp", src: "/tracks/the-fire-divide.mp3" },
+  { title: "The Business", cover: "/tracks/the-business.webp", src: "/tracks/the-business.mp3" },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
