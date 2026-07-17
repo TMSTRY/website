@@ -3,19 +3,19 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useSignalRoom } from "./SignalRoomContext";
 
-export type Track = { title: string; cover: string; src?: string };
+export type Track = { title: string; cover: string; src?: string; hue: number };
 
 export const TRACKS: Track[] = [
-  { title: "Not Built to Behave", cover: "/tracks/not-built-to-behave.webp", src: "/tracks/not-built-to-behave.mp3" },
-  { title: "Dead Air", cover: "/tracks/dead-air.webp", src: "/tracks/dead-air.mp3" },
-  { title: "Calibrated Smile", cover: "/tracks/calibrated-smile.webp", src: "/tracks/calibrated-smile.mp3" },
-  { title: "Hollow Shape", cover: "/tracks/hollow-shape.webp", src: "/tracks/hollow-shape.mp3" },
-  { title: "Quiet Tension", cover: "/tracks/quiet-tension.webp", src: "/tracks/quiet-tension.mp3" },
-  { title: "Lovin on da Ladies", cover: "/tracks/lovin-on-da-ladies.webp", src: "/tracks/lovin-on-da-ladies.mp3" },
-  { title: "Outdated", cover: "/tracks/outdated.webp", src: "/tracks/outdated.mp3" },
-  { title: "This Ain't Easy Street", cover: "/tracks/this-aint-easy-street.webp", src: "/tracks/this-aint-easy-street.mp3" },
-  { title: "The Fire Divide", cover: "/tracks/the-fire-divide.webp", src: "/tracks/the-fire-divide.mp3" },
-  { title: "The Business", cover: "/tracks/the-business.webp", src: "/tracks/the-business.mp3" },
+  { title: "Not Built to Behave", cover: "/tracks/not-built-to-behave.webp", src: "/tracks/not-built-to-behave.mp3", hue: 205 },
+  { title: "Dead Air", cover: "/tracks/dead-air.webp", src: "/tracks/dead-air.mp3", hue: 265 },
+  { title: "Calibrated Smile", cover: "/tracks/calibrated-smile.webp", src: "/tracks/calibrated-smile.mp3", hue: 315 },
+  { title: "Hollow Shape", cover: "/tracks/hollow-shape.webp", src: "/tracks/hollow-shape.mp3", hue: 185 },
+  { title: "Quiet Tension", cover: "/tracks/quiet-tension.webp", src: "/tracks/quiet-tension.mp3", hue: 240 },
+  { title: "Lovin on da Ladies", cover: "/tracks/lovin-on-da-ladies.webp", src: "/tracks/lovin-on-da-ladies.mp3", hue: 330 },
+  { title: "Outdated", cover: "/tracks/outdated.webp", src: "/tracks/outdated.mp3", hue: 95 },
+  { title: "This Ain't Easy Street", cover: "/tracks/this-aint-easy-street.webp", src: "/tracks/this-aint-easy-street.mp3", hue: 25 },
+  { title: "The Fire Divide", cover: "/tracks/the-fire-divide.webp", src: "/tracks/the-fire-divide.mp3", hue: 12 },
+  { title: "The Business", cover: "/tracks/the-business.webp", src: "/tracks/the-business.mp3", hue: 48 },
 ];
 
 function shuffle<T>(arr: T[]): T[] {
@@ -37,6 +37,7 @@ interface PlayerValue {
   next: () => void;
   prev: () => void;
   seek: (frac: number) => void;
+  getAnalyser: () => AnalyserNode | null;
 }
 
 const PlayerContext = createContext<PlayerValue | null>(null);
@@ -49,6 +50,37 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+
+  // Lazily route the <audio> element through a Web Audio analyser so the
+  // visualizer can read live frequency data. Must be triggered from a user
+  // gesture (toggle) so the AudioContext is allowed to start.
+  const ensureAnalyser = useCallback(() => {
+    const a = audioRef.current;
+    if (!a || typeof window === "undefined") return;
+    try {
+      if (!audioCtxRef.current) {
+        const Ctx = window.AudioContext
+          ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!Ctx) return;
+        const ctx = new Ctx();
+        const source = ctx.createMediaElementSource(a);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.82;
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+        audioCtxRef.current = ctx;
+        analyserRef.current = analyser;
+      }
+      if (audioCtxRef.current.state === "suspended") void audioCtxRef.current.resume();
+    } catch {
+      // If Web Audio fails, playback keeps working; visualizer falls back.
+    }
+  }, []);
+
+  const getAnalyser = useCallback(() => analyserRef.current, []);
 
   // Shuffle once per visit (after mount to avoid hydration mismatch)
   useEffect(() => {
@@ -76,8 +108,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   const toggle = useCallback(() => {
     if (!track.src) return;
+    ensureAnalyser();
     setPlaying((p) => !p);
-  }, [track.src]);
+  }, [track.src, ensureAnalyser]);
   const pause = useCallback(() => setPlaying(false), []);
   const next = useCallback(() => setPos((p) => (p + 1) % TRACKS.length), []);
   const prev = useCallback(() => setPos((p) => (p - 1 + TRACKS.length) % TRACKS.length), []);
@@ -89,7 +122,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <PlayerContext.Provider value={{ track, playing, currentTime, duration, toggle, pause, next, prev, seek }}>
+    <PlayerContext.Provider value={{ track, playing, currentTime, duration, toggle, pause, next, prev, seek, getAnalyser }}>
       {children}
       <audio
         ref={audioRef}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePlayer } from "@/context/PlayerContext";
 import CoverLightbox from "./CoverLightbox";
+import Visualizer from "./Visualizer";
 
 /** Floating compact player that appears once you scroll past the hero. */
 export default function MiniPlayer() {
@@ -40,6 +41,9 @@ export default function MiniPlayer() {
             className="fixed bottom-4 right-4 z-[90] w-[300px] max-w-[calc(100vw-2rem)] border border-white/10 bg-obsidian/85 backdrop-blur-xl"
             style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.6)" }}
           >
+            {/* live spectrum, faint, behind the controls */}
+            <Visualizer className="absolute inset-0 w-full h-full opacity-[0.16] pointer-events-none" />
+
             {/* progress line on top */}
             <div className="relative h-[2px] bg-white/10">
               <div className="absolute inset-y-0 left-0 bg-glow-blue/80" style={{ width: `${progress}%` }} />

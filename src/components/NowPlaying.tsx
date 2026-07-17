@@ -4,27 +4,8 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import CoverLightbox from "./CoverLightbox";
+import Visualizer from "./Visualizer";
 import { usePlayer } from "@/context/PlayerContext";
-
-function Eq({ playing }: { playing: boolean }) {
-  return (
-    <div className="flex items-end gap-[2px] h-6" aria-hidden="true">
-      {Array.from({ length: 18 }).map((_, i) => (
-        <span
-          key={i}
-          className="eq-bar w-[2px] bg-glow-blue/70"
-          style={{
-            height: "100%",
-            animationDelay: `${(i % 5) * 0.12}s`,
-            animationDuration: `${0.7 + (i % 4) * 0.18}s`,
-            animationPlayState: playing ? "running" : "paused",
-            opacity: playing ? 1 : 0.35,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 export default function NowPlaying() {
   const { track, playing, currentTime, duration, toggle, next, prev, seek } = usePlayer();
@@ -59,7 +40,7 @@ export default function NowPlaying() {
           <Image key={track.cover} src={track.cover} alt={track.title} fill sizes="48px" className="object-cover transition-transform duration-300 group-hover/cv:scale-110" />
           <span className="absolute inset-0 bg-obsidian/0 group-hover/cv:bg-obsidian/20 transition-colors" />
         </button>
-        <Eq playing={playing} />
+        <Visualizer className="h-10 flex-1 min-w-0" />
       </div>
 
       {/* Progress bar (click to seek) */}
