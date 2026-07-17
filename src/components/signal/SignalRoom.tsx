@@ -6,6 +6,7 @@ import { useStaticCanvas } from "@/hooks/useStaticCanvas";
 import { useAmbientAudio } from "@/hooks/useAmbientAudio";
 import RoomDust from "./RoomDust";
 import SignalYouTube from "./SignalYouTube";
+import SignalTerminal from "./SignalTerminal";
 import { useSignalRoom } from "@/context/SignalRoomContext";
 import { useModalChrome } from "@/hooks/useModalChrome";
 import { getYouTubeId } from "@/components/newsTypes";
@@ -84,6 +85,7 @@ export default function SignalRoom() {
   const [muted, setMuted] = useState(false); // audio on the moment you enter
   const [glitchMsg, setGlitchMsg] = useState<string | null>(null);
   const [lore, setLore] = useState<{ text: string; side: "left" | "right" } | null>(null);
+  const [terminalOpen, setTerminalOpen] = useState(false);
   const [loreLogs, setLoreLogs] = useState<string[]>(LORE_LOGS);
   const [hiddenMsgs, setHiddenMsgs] = useState<string[]>(HIDDEN_MESSAGES);
 
@@ -371,9 +373,14 @@ export default function SignalRoom() {
             <button onClick={randomSignal} className={btn}>Random</button>
             <button onClick={nextSnippet} className={btn}>Next signal →</button>
             <button onClick={() => setMuted((m) => !m)} className={btn}>{muted ? "Audio off" : "Audio on"}</button>
+            <button onClick={() => setTerminalOpen(true)} className={btn}>Terminal ▮</button>
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {terminalOpen && <SignalTerminal onClose={() => setTerminalOpen(false)} />}
+      </AnimatePresence>
     </motion.div>
   );
 }
