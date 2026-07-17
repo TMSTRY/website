@@ -1,8 +1,23 @@
-"use client";
+import Link from "next/link";
+import { client } from "@/sanity/lib/client";
+import { latestPostMetaQuery } from "@/sanity/lib/queries";
 
-import { motion } from "framer-motion";
+type LatestPost = { title: string; date?: string; slug?: string } | null;
 
-export default function Footer() {
+function fmtDate(date?: string) {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  return `${dd}.${mm}`;
+}
+
+export default async function Footer() {
+  const latest: LatestPost = await client
+    .fetch(latestPostMetaQuery, {}, { next: { tags: ["newsPost"] } })
+    .catch(() => null);
+
   return (
     <footer className="relative border-t border-white/[0.04] py-12 px-6 md:px-12">
       {/* Top divider glow */}
@@ -62,9 +77,18 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <div className="flex items-center gap-2 opacity-30">
-            <div className="w-1 h-1 rounded-full bg-glow-blue animate-pulse" />
-            <span className="text-silver/40 text-[9px] font-mono tracking-widest">SIGNAL ACTIVE</span>
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-1 rounded-full bg-glow-blue animate-pulse opacity-60" />
+            {latest?.title ? (
+              <Link
+                href={latest.slug ? `/news/${latest.slug}` : "/news"}
+                className="text-silver/35 hover:text-glow-blue/70 text-[9px] font-mono tracking-widest transition-colors duration-300 line-clamp-1 max-w-[70vw] sm:max-w-[420px]"
+              >
+                LAST TRANSMISSION{fmtDate(latest.date) ? ` // ${fmtDate(latest.date)}` : ""} — {latest.title.toUpperCase()}
+              </Link>
+            ) : (
+              <span className="text-silver/40 text-[9px] font-mono tracking-widest opacity-75">SIGNAL ACTIVE</span>
+            )}
           </div>
         </div>
       </div>

@@ -187,6 +187,39 @@ export default function SignalRoom() {
     setSnippetIdx(Math.floor(Math.random() * 50));
   });
 
+  // ── Keyboard controls: ← → channels, N next, R random, M mute, T terminal ──
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (terminalOpen) return; // don't hijack keys while typing in the terminal
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.target instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+      switch (e.key) {
+        case "ArrowRight":
+          e.preventDefault();
+          burst(() => { setChannelIdx((i) => (i + 1) % CHANNELS.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          burst(() => { setChannelIdx((i) => (i + CHANNELS.length - 1) % CHANNELS.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          break;
+        case "n": case "N":
+          burst(() => setSnippetIdx((n) => n + 1));
+          break;
+        case "r": case "R":
+          burst(() => { setChannelIdx(Math.floor(Math.random() * CHANNELS.length)); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          break;
+        case "m": case "M":
+          setMuted((m) => !m);
+          break;
+        case "t": case "T":
+          setTerminalOpen(true);
+          break;
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [terminalOpen, burst]);
+
   // ── Auto-advance snippets ──
   useEffect(() => {
     if (switching || !snippet) return;
@@ -387,6 +420,11 @@ export default function SignalRoom() {
             <button onClick={() => setMuted((m) => !m)} className={btn}>{muted ? "Audio off" : "Audio on"}</button>
             <button onClick={() => setTerminalOpen(true)} className={btn}>Terminal ▮</button>
           </div>
+
+          {/* key hints (desktop) */}
+          <p className="hidden md:block mt-4 text-center font-mono text-[9px] tracking-[0.25em] uppercase text-silver/25">
+            ← → channels&nbsp;&nbsp;·&nbsp;&nbsp;N next&nbsp;&nbsp;·&nbsp;&nbsp;R random&nbsp;&nbsp;·&nbsp;&nbsp;M audio&nbsp;&nbsp;·&nbsp;&nbsp;T terminal&nbsp;&nbsp;·&nbsp;&nbsp;ESC exit
+          </p>
         </div>
       </div>
 

@@ -29,6 +29,13 @@ export const latestPostsQuery = groq`
 // Total number of published posts (to decide whether to show "View all")
 export const postsCountQuery = groq`count(*[_type == "newsPost" && published != false])`;
 
+// Latest post metadata only (footer "last transmission" line)
+export const latestPostMetaQuery = groq`
+  *[_type == "newsPost" && published != false] | order(date desc, _createdAt desc) [0] {
+    title, date, "slug": slug.current
+  }
+`;
+
 // A single published post by slug (for /news/[slug])
 export const postBySlugQuery = groq`
   *[_type == "newsPost" && published != false && slug.current == $slug][0] {
