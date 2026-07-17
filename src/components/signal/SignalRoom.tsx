@@ -22,6 +22,21 @@ const CHANNELS = [
   { id: "CH05", label: "Corrupted Signal" },
 ];
 
+// Hidden channel, unlocked with the Konami code (see KonamiUnlock.tsx)
+const CH06 = { id: "CH06", label: "The Source" };
+const CH06_MESSAGES = [
+  "THIS IS WHERE IT BEGAN",
+  "THE FIRST TRANSMISSION HAD NO AUTHOR",
+  "01010100 01001101 01010011",
+  "YOU FOUND THE FREQUENCY",
+  "CHANNEL ZERO WAS A LIE. THIS IS CHANNEL ZERO.",
+  "THE OPERATOR KNOWS YOU ARE HERE",
+  "EVERYTHING YOU HEARD CAME FROM THIS ROOM",
+  "DO NOT ADJUST YOUR SET",
+  "IT REMEMBERS EVERYONE WHO TUNES IN",
+  "HUMAN // SIGNAL // AI — IN THAT ORDER",
+];
+
 const DEFAULT_DURATION = 22;
 const FALLBACK_VIDEO = "fK4z0vTYh7g";
 
@@ -79,7 +94,18 @@ export default function SignalRoom() {
 
   const [byChannel, setByChannel] = useState<Record<string, Snippet[]>>({});
   const [fallback, setFallback] = useState<Snippet[]>([]);
-  const [channelIdx, setChannelIdx] = useState(0);
+  const [unlocked] = useState(
+    () => typeof window !== "undefined" && localStorage.getItem("tmstry-ch06") === "1"
+  );
+  const channels = useMemo(() => (unlocked ? [...CHANNELS, CH06] : CHANNELS), [unlocked]);
+  const [channelIdx, setChannelIdx] = useState(() => {
+    // Arrived straight from the Konami unlock toast → land on CH06
+    if (typeof window !== "undefined" && sessionStorage.getItem("tmstry-goto-ch06") === "1") {
+      sessionStorage.removeItem("tmstry-goto-ch06");
+      if (localStorage.getItem("tmstry-ch06") === "1") return CHANNELS.length; // index of CH06
+    }
+    return 0;
+  });
   const [snippetIdx, setSnippetIdx] = useState(0);
   const [switching, setSwitching] = useState(true);
   const [muted, setMuted] = useState(false); // audio on the moment you enter
@@ -158,14 +184,16 @@ export default function SignalRoom() {
     return () => { active = false; };
   }, []);
 
-  const channel = CHANNELS[channelIdx];
+  const channel = channels[Math.min(channelIdx, channels.length - 1)];
+  const isSource = channel.id === "CH06";
   const snippets = useMemo(() => {
+    if (channel.id === "CH06") return []; // The Source broadcasts nothing but static
     const list = byChannel[channel.id];
     return list && list.length ? list : fallback;
   }, [byChannel, fallback, channel.id]);
 
   const snippet = snippets.length ? snippets[snippetIdx % snippets.length] : undefined;
-  const corruptedActive = channel.id === "CH05" || !!snippet?.corrupted;
+  const corruptedActive = channel.id === "CH05" || isSource || !!snippet?.corrupted;
 
   useAmbientAudio(!muted, corruptedActive);
 
@@ -183,7 +211,7 @@ export default function SignalRoom() {
   const switchChannel = (i: number) => burst(() => { setChannelIdx(i); setSnippetIdx(Math.floor(Math.random() * 50)); });
   const nextSnippet = useCallback(() => burst(() => setSnippetIdx((n) => n + 1)), [burst]);
   const randomSignal = () => burst(() => {
-    setChannelIdx(Math.floor(Math.random() * CHANNELS.length));
+    setChannelIdx(Math.floor(Math.random() * channels.length));
     setSnippetIdx(Math.floor(Math.random() * 50));
   });
 
@@ -196,17 +224,17 @@ export default function SignalRoom() {
       switch (e.key) {
         case "ArrowRight":
           e.preventDefault();
-          burst(() => { setChannelIdx((i) => (i + 1) % CHANNELS.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          burst(() => { setChannelIdx((i) => (i + 1) % channels.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
           break;
         case "ArrowLeft":
           e.preventDefault();
-          burst(() => { setChannelIdx((i) => (i + CHANNELS.length - 1) % CHANNELS.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          burst(() => { setChannelIdx((i) => (i + channels.length - 1) % channels.length); setSnippetIdx(Math.floor(Math.random() * 50)); });
           break;
         case "n": case "N":
           burst(() => setSnippetIdx((n) => n + 1));
           break;
         case "r": case "R":
-          burst(() => { setChannelIdx(Math.floor(Math.random() * CHANNELS.length)); setSnippetIdx(Math.floor(Math.random() * 50)); });
+          burst(() => { setChannelIdx(Math.floor(Math.random() * channels.length)); setSnippetIdx(Math.floor(Math.random() * 50)); });
           break;
         case "m": case "M":
           setMuted((m) => !m);
@@ -218,7 +246,7 @@ export default function SignalRoom() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [terminalOpen, burst]);
+  }, [terminalOpen, burst, channels.length]);
 
   // ── Auto-advance snippets ──
   useEffect(() => {
@@ -234,13 +262,16 @@ export default function SignalRoom() {
     if (!corruptedActive || switching) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let on: ReturnType<typeof setTimeout>;
+    // The Source speaks its own messages, more often and slightly longer
+    const pool = isSource ? CH06_MESSAGES : hiddenMsgs;
     const tick = () => {
-      setGlitchMsg(hiddenMsgs[Math.floor(Math.random() * hiddenMsgs.length)]);
-      on = setTimeout(() => setGlitchMsg(null), 700 + Math.random() * 500);
+      setGlitchMsg(pool[Math.floor(Math.random() * pool.length)]);
+      on = setTimeout(() => setGlitchMsg(null), (isSource ? 1400 : 700) + Math.random() * 500);
     };
-    const iv = setInterval(tick, 4500 + Math.random() * 4000);
+    const iv = setInterval(tick, (isSource ? 3000 : 4500) + Math.random() * 4000);
+    if (isSource) tick();
     return () => { clearInterval(iv); clearTimeout(on); };
-  }, [corruptedActive, switching, hiddenMsgs]);
+  }, [corruptedActive, switching, hiddenMsgs, isSource]);
 
   // ── Lore logs on the side monitors (desktop) ──
   useEffect(() => {
@@ -329,11 +360,11 @@ export default function SignalRoom() {
       {/* ── Channel rail (desktop) ── */}
       <div className="hidden md:flex absolute left-10 top-1/2 -translate-y-1/2 z-20 flex-col gap-1">
         <span className="font-mono text-[9px] tracking-[0.3em] uppercase text-silver/30 mb-3">Channels</span>
-        {CHANNELS.map((c, i) => {
+        {channels.map((c, i) => {
           const activeCh = i === channelIdx;
           return (
             <button key={c.id} onClick={() => i !== channelIdx && switchChannel(i)} className="group flex items-center gap-3 py-2 text-left">
-              <span className="font-mono text-[10px] tracking-[0.1em]" style={{ color: activeCh ? "#4fc3f7" : "rgba(136,146,160,0.45)" }}>{c.id}</span>
+              <span className="font-mono text-[10px] tracking-[0.1em]" style={{ color: activeCh ? (c.id === "CH06" ? "#e040fb" : "#4fc3f7") : c.id === "CH06" ? "rgba(224,64,251,0.45)" : "rgba(136,146,160,0.45)" }}>{c.id}</span>
               <span className="text-[11px] tracking-wider transition-colors" style={{ color: activeCh ? "rgba(232,234,237,0.9)" : "rgba(136,146,160,0.35)" }}>{c.label}</span>
               {activeCh && <span className="w-1 h-1 rounded-full bg-glow-blue animate-pulse" />}
             </button>
@@ -373,6 +404,11 @@ export default function SignalRoom() {
                 />
               ) : snippet?.videoId ? (
                 <SignalYouTube videoId={snippet.videoId} start={snippet.start} duration={snippet.duration} muted={muted} />
+              ) : isSource && !switching ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-[4] pointer-events-none">
+                  <span className="font-mono text-[10px] tracking-[0.5em] uppercase text-silver/40">No carrier</span>
+                  <span className="font-mono text-[9px] tracking-[0.35em] text-glow-blue/40">01010100 01001101 01010011</span>
+                </div>
               ) : null}
 
               {/* hidden corrupted message */}
@@ -405,9 +441,9 @@ export default function SignalRoom() {
 
           {/* channel chips (mobile) */}
           <div className="md:hidden mt-4 flex gap-2 overflow-x-auto pb-1">
-            {CHANNELS.map((c, i) => (
+            {channels.map((c, i) => (
               <button key={c.id} onClick={() => i !== channelIdx && switchChannel(i)} className="flex-shrink-0 font-mono text-[10px] tracking-[0.1em] px-3 py-1.5 border transition-colors"
-                style={{ color: i === channelIdx ? "#4fc3f7" : "rgba(136,146,160,0.5)", borderColor: i === channelIdx ? "rgba(79,195,247,0.4)" : "rgba(255,255,255,0.08)" }}>
+                style={{ color: i === channelIdx ? (c.id === "CH06" ? "#e040fb" : "#4fc3f7") : c.id === "CH06" ? "rgba(224,64,251,0.5)" : "rgba(136,146,160,0.5)", borderColor: i === channelIdx ? (c.id === "CH06" ? "rgba(224,64,251,0.4)" : "rgba(79,195,247,0.4)") : "rgba(255,255,255,0.08)" }}>
                 {c.id}
               </button>
             ))}

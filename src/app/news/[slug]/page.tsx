@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { client } from "@/sanity/lib/client";
 import { postBySlugQuery, postSlugsQuery } from "@/sanity/lib/queries";
-import { urlFor } from "@/sanity/lib/image";
 import PostDetail from "@/components/PostDetail";
 import { type Post, bodyToPlainText } from "@/components/newsTypes";
 
@@ -30,9 +29,16 @@ export async function generateMetadata({
   if (!post) return { title: "News — TMSTRY" };
 
   const description = bodyToPlainText(post.body).replace(/\s+/g, " ").trim().slice(0, 160);
-  const image = post.image?.asset
-    ? urlFor(post.image).width(1200).height(630).fit("crop").url()
-    : "/og.png";
+  // Branded generated OG image (title + glitch aesthetic) for every post
+  const ogParams = new URLSearchParams({ title: post.title });
+  if (post.tag) ogParams.set("tag", post.tag);
+  if (post.date) {
+    const d = new Date(post.date);
+    if (!isNaN(d.getTime())) {
+      ogParams.set("date", `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`);
+    }
+  }
+  const image = `https://tmstry.com/api/og?${ogParams.toString()}`;
   const url = `https://tmstry.com/news/${slug}`;
 
   return {

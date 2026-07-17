@@ -8,6 +8,7 @@ import ScrollProgress from "@/components/ScrollProgress";
 import ConsoleSignal from "@/components/ConsoleSignal";
 import MiniPlayer from "@/components/MiniPlayer";
 import IncomingTransmission from "@/components/IncomingTransmission";
+import KonamiUnlock from "@/components/KonamiUnlock";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -112,6 +113,7 @@ export default function RootLayout({
               {children}
               <MiniPlayer />
               <IncomingTransmission />
+              <KonamiUnlock />
             </PlayerProvider>
           </SignalRoomProvider>
         </ThemeProvider>
