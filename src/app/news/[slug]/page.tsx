@@ -28,7 +28,7 @@ export async function generateMetadata({
   const post = await getPost(slug);
   if (!post) return { title: "News — TMSTRY" };
 
-  const description = bodyToPlainText(post.body).replace(/\s+/g, " ").trim().slice(0, 160);
+  const description = bodyToPlainText(post.body).replace(/\s+/g, " ").trim().slice(0, 125);
   // Branded generated OG image (title + glitch aesthetic) for every post
   const ogParams = new URLSearchParams({ title: post.title });
   if (post.tag) ogParams.set("tag", post.tag);
@@ -49,6 +49,7 @@ export async function generateMetadata({
       title: post.title,
       description,
       url,
+      siteName: "TMSTRY",
       type: "article",
       images: [{ url: image, width: 1200, height: 630, alt: post.title }],
     },
