@@ -37,13 +37,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title: "TMSTRY — Human // Signal // AI",
-    description: "Human emotion through artificial minds.",
+    description: "Cinematic electronic music where human emotion meets artificial minds. Tune in to the latest transmissions.",
     type: "website",
     url: "https://tmstry.com",
     siteName: "TMSTRY",
     images: [
       {
-        url: "/og.png",
+        url: "/og.jpg",
         width: 1200,
         height: 630,
         alt: "TMSTRY — Human // Signal // AI",
@@ -53,8 +53,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "TMSTRY — Human // Signal // AI",
-    description: "Human emotion through artificial minds.",
-    images: ["/og.png"],
+    description: "Cinematic electronic music where human emotion meets artificial minds. Tune in to the latest transmissions.",
+    images: ["/og.jpg"],
   },
 };
 
@@ -64,7 +64,7 @@ const jsonLd = {
   name: "TMSTRY",
   url: "https://tmstry.com",
   genre: ["Electronic", "Cinematic", "AI-Hybrid"],
-  image: "https://tmstry.com/og.png",
+  image: "https://tmstry.com/og.jpg",
   description: "Human emotion through artificial minds.",
   sameAs: [
     "https://open.spotify.com/artist/6N2jkKJIcbzHwMs4cswMpw",
