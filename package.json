@@ -12,6 +12,7 @@
     "@anthropic-ai/sdk": "^0.112.1",
     "@portabletext/react": "^4.0.3",
     "@sanity/image-url": "^2.1.1",
+    "@vercel/analytics": "^2.0.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.8",
     "next": "^15.5.18",
