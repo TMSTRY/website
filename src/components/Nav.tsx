@@ -75,6 +75,15 @@ export default function Nav() {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-10">
+          <button
+            onClick={() => handleNavClick("#zerosum")}
+            className="group relative hidden lg:flex items-center gap-2 text-xs uppercase transition-colors duration-300"
+            style={{ letterSpacing: "0.2em", color: "#C9913F" }}
+          >
+            <span className="w-1 h-1 rounded-full animate-pulse" style={{ background: "#C9913F", boxShadow: "0 0 6px #C9913F" }} />
+            Zero Sum
+            <span className="absolute -bottom-1 left-3 h-px w-0 group-hover:w-[calc(100%-0.75rem)] transition-all duration-300" style={{ background: "#C9913F" }} />
+          </button>
           <ul className="flex items-center gap-10">
             {navLinks.map((link, i) => {
               const active = activeId === link.href.replace("#", "");
@@ -130,6 +139,16 @@ export default function Nav() {
             className="md:hidden bg-charcoal/95 backdrop-blur-xl border-b border-white/5"
           >
             <ul className="px-6 py-6 flex flex-col gap-6">
+              <li>
+                <button
+                  onClick={() => handleNavClick("#zerosum")}
+                  className="text-sm uppercase flex items-center gap-2"
+                  style={{ letterSpacing: "0.25em", color: "#C9913F" }}
+                >
+                  <span className="w-1 h-1 rounded-full" style={{ background: "#C9913F", boxShadow: "0 0 6px #C9913F" }} />
+                  Zero Sum
+                </button>
+              </li>
               {navLinks.map((link) => {
                 const active = activeId === link.href.replace("#", "");
                 return (

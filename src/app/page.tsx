@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import HeroSection from "@/components/HeroSection";
+import ZeroSumSection from "@/components/zerosum/ZeroSumSection";
 import MusicSection from "@/components/MusicSection";
 import VideoSection from "@/components/VideoSection";
 import AboutSection from "@/components/AboutSection";
@@ -16,8 +17,7 @@ export default function Home() {
       <Nav />
       <HeroSection />
 
-      {/* Section divider */}
-      <div className="section-divider mx-12 md:mx-24" />
+      <ZeroSumSection />
 
       <MusicSection />
 
