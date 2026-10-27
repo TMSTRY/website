@@ -21,6 +21,16 @@
 - **Geen tokens of API keys hardcoden** in de code. Gebruik Vercel environment variables.
 - Styled-components is als directe dependency toegevoegd (package.json) om een Sanity build-fout op te lossen.
 
+
+## Stand en werken in de cloud (27/10/2026)
+
+- Deze CONTEXT.md is de bron voor elke sessie, ook in de cloud (claude.ai/code): lees ze eerst.
+- Alles wat nodig is staat in de repo; geheimen (Sanity-token, ANTHROPIC_API_KEY, ...) enkel in Vercel.
+- De nieuwe site in opbouw is een apart project: repo TMSTRY/tmstry-lab, live op labo.tmstry.com en
+  lab.tmstry.com (eigen CONTEXT.md daar). Ze moet later tmstry.com vervangen; deze site blijft tot
+  dan het vangnet.
+- Tim antwoorden in het Nederlands, kort en in gewone taal; geen em-dashes in tekst of UI.
+
 ---
 
 ## Tech Stack
@@ -303,7 +313,7 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 - Sticky nav met scroll-state + mobiel hamburger menu
 - Dark/light theme toggle
 - Music sectie: Spotify embed + DSP links + top tracks
-- Video sectie: live YouTube RSS feed, Shorts gefilterd, modal player
+- Video sectie: nieuwste video's via /api/youtube (leest de /videos-pagina van het kanaal, sinds 18/10/2026; RSS gaf 404), Shorts gefilterd, modal player
 - About sectie: 8 hoofdstukken met modals, polaroid in Origins, featured foto
 - Press sectie: coverflow carousel, drag-navigatie, lightbox
 - News sectie: Sanity CMS-beheerd, hashtag filtering, YouTube in modals
@@ -320,3 +330,112 @@ Secties worden van elkaar gescheiden door een `.section-divider` (subtiele horiz
 ### Bekende situaties
 - `styled-components` is als directe dependency toegevoegd om een Sanity build-fout te vermijden (was transitieve dep maar webpack kon het niet vinden)
 - YouTube Shorts-filtering werkt via HEAD-requests naar `youtube.com/shorts/{id}` — kan trager zijn bij cold start
+
+---
+
+## Toegevoegd sinds de eerste versie (bijgewerkt 27/10/2026)
+
+Deze delen zijn nieuwer dan de beschrijving hierboven; bij verschil geldt dit.
+
+### API routes
+- `/api/like` — POST: verhoog likes
+- `/api/comment` — GET/POST comments
+- `/api/transmissions` — GET alle transmissions
+- `/api/lore` — GET signalLogs (cached met tag "signalLog")
+- `/api/youtube` — GET nieuwste gewone video's (?limit=1-15, default 4). **Sinds 18/10/2026 (commit a9c91ba)**: leest de /videos-pagina van het kanaal (ytInitialData, ook de `<script id="yt-initial-data">`-vorm), geen Shorts, premières overgeslagen, `Cookie: SOCS=CAI` tegen de EU-toestemmingspagina; RSS (gaf 404) enkel als reserve, Shorts daar via de /shorts/-link. CDN-cache 15 min + swr 1 dag. Zelfde aanpak als tmstry-lab /api/latest-video (die heeft de JSON-script-vorm nog niet)
+- `/api/revalidate` — POST: revalidate tags newsPost/transmission/signalLog
+
+### Sanity clients
+- `src/sanity/lib/client.ts` — read-only
+- `src/sanity/lib/serverClient.ts` — write-enabled (SANITY_API_TOKEN met Editor permission)
+- `src/sanity/lib/image.ts` — gebruikt `createImageUrlBuilder` (named export, niet default — was deprecated)
+
+### Hero sectie (`src/components/HeroSection.tsx`)
+- **Video:** `public/hero.mp4` (Seedance 5s loop, 21:9, 14MB) op desktop; `public/hero-poster.jpg` (319KB) als poster + mobiel
+- **HUD overlays:** glitch TMSTRY-titel (links), manifesto links, Transmission Feed rechtsboven, Now Playing + Listen On rechtsonder, Status: Online linksonder, + crosshairs hoeken
+- **"ENTER THE TRANSMISSION"** knop → opent Signal Room via `useSignalRoom().open()`
+- `NowPlaying` component geïntegreerd rechtsonder
+
+### Globale audiospeler
+- `src/context/PlayerContext.tsx` — globale state, 8 tracks, shuffle per bezoek, pauzeert bij Signal Room (`isOpen`)
+- `src/components/NowPlaying.tsx` — hero-speler (cover + equalizer + progress bar + transport)
+- `src/components/MiniPlayer.tsx` — floating mini-speler rechtsonder bij scrollen voorbij hero; × stopt muziek + verbergt; re-armt bij terug naar boven
+- `src/components/CoverLightbox.tsx` — gedeelde cover-lightbox (click cover → groot beeld met scanlines)
+- `src/components/Visualizer.tsx` — audio-reactieve spectrum-canvas: Web Audio AnalyserNode in PlayerContext (`getAnalyser()`, lazy via `ensureAnalyser()` in toggle), per track eigen `hue` in Track type; in NowPlaying (vervangt CSS-equalizer) + faint achtergrond in MiniPlayer; fallback synthetische puls, statisch bij reduced-motion
+- Tracks in `public/tracks/` (10 MP3's + webp covers):
+  - not-built-to-behave, dead-air, calibrated-smile, hollow-shape, quiet-tension, lovin-on-da-ladies, outdated, this-aint-easy-street, the-fire-divide, the-business
+
+### Music sectie (`src/components/MusicSection.tsx`)
+- Links: artiest-afbeelding `public/photos/studio3.jpg` (hover → glitch → `/ai-headshot.jpg`)
+- Rechts: Spotify-embed + DSP-lijst (Spotify, Apple Music, YouTube Music, Amazon Music, Deezer)
+
+### Signal Room (`src/components/signal/`)
+- Verborgen CRT-TV in nav (`NavSignalTV`) → klik → full-screen immersieve Signal Room
+- `SignalRoom.tsx` — 5 kanalen (CH01-CH05), mouse parallax, ambient audio
+- `SignalYouTube.tsx` — YouTube IFrame API (altijd muted start, dan unmute), laadt tot 20 video's
+- `RoomDust.tsx` — 48 drijvende stofdeeltjes op canvas
+- `TransmissionTransition.tsx` — static-wipe channel-overgang
+- Achtergrond: `public/signal-room.webp` (264KB, AI bunker)
+- CH05 = Corrupted Signal — glitch, hidden messages, zware static
+- Lore overlays (side-monitor logs): uit Sanity `signalLog` docs, fallback hardcoded (16 entries)
+- Hidden messages (CH05): Sanity `signalLog` (kind=hidden), fallback hardcoded (15 entries, incl. "01010100 01001101 01010011")
+- Ambient audio: Web Audio API (drone + hiss), geen audiobestand
+- Audio stopt automatisch als Signal Room opent
+- **Signal Terminal** (AI easter egg): "Terminal ▮"-knop in de controls → `SignalTerminal.tsx` chat-overlay met "the Signal"-persona; `/api/signal-chat` (route.ts) → Claude Haiku (`claude-haiku-4-5`) via @anthropic-ai/sdk; `ANTHROPIC_API_KEY` in Vercel env vars ($5 prepaid tegoed); limieten: 10 berichten/sessie client-side, 30 req/10min per IP server-side, max 400 chars/bericht, prompt caching op system prompt
+
+### Overige easter eggs & polish (17/7 sessie)
+- `IncomingTransmission.tsx` — "incoming transmission" toast na 25s (1×/sessie), Answer → Signal Room + terminal auto-open (via `open({terminal:true})` op SignalRoomContext)
+- `KonamiUnlock.tsx` — Konami-code (↑↑↓↓←→←→BA) ontgrendelt CH06 "The Source" permanent (localStorage `tmstry-ch06`); toast met "Tune in" → springt direct naar CH06 (sessionStorage `tmstry-goto-ch06`)
+- CH06 in SignalRoom: alleen static ("NO CARRIER" + binaire TMS), eigen CH06_MESSAGES pool, roze accent in channel rail
+- Toetsenbord in Signal Room: ← → kanalen, N next, R random, M mute, T terminal, ESC exit (+ hint-regel desktop)
+- Footer: "LAST TRANSMISSION // dd.mm — titel" linkt naar nieuwste post (server component, `latestPostMetaQuery`, newsPost ISR-tag); fallback "SIGNAL ACTIVE"
+- `/api/og` (route.tsx, edge) — gegenereerde OG-image 1200×630 per nieuwspost (wordmark, scanlines, glitch-titel); `generateMetadata` in news/[slug] wijst ernaar
+- Signal Terminal dossier: Tim-feiten in system prompt (43, getrouwd, 2 kids, 2 honden/t-rex pup, cipier nachtdienst 18j, Gent, doner, GTA 6, schoenmaat 43 — GEEN high heels grap, te persoonlijk); druppelsgewijs + liefdevol plagend, nooit verzinnen
+
+### Nav (`src/components/Nav.tsx`)
+- Scroll-spy via IntersectionObserver, active = helderdere tekst + blauw onderstreepje + glow stipje
+- **Hover-swap** (HoverSwapText): Music→Racket(paars), Video→Reruns(roze), About→Ego(paars), Press→Crap(roze), News→Gossip(paars), Connect→Spam(roze)
+- Grunge font + swap-glitch animatie op hover
+- NavSignalTV tussen nav-links en ThemeToggle
+
+### Globale componenten
+- `src/components/ScrollProgress.tsx` — 4px blauw→magenta balk bovenaan (scroll progress, Framer Motion spring)
+- `src/components/ConsoleSignal.tsx` — easter egg in browser console (TMSTRY logo + hints + binaire TMS)
+- `src/components/HoverSwapText.tsx` — herbruikbare hover-swap, tone prop: "purple" | "pink"
+- `src/app/not-found.tsx` — branded 404 "Signal Lost" pagina
+- `src/components/CustomCursor.tsx` — `body.cursor-none` (homepage only)
+
+### CSS / globals (`src/app/globals.css`)
+- `scroll-padding-top: 6rem` (nav offset)
+- CRT keyframes: signal-label-flicker, crt-flicker, signal-glitch
+- Fog keyframes, img-glitch, swap-glitch, eq-bar
+- `.font-grunge { font-family: var(--font-grunge), cursive; }`
+- `:focus-visible { outline: 2px solid rgba(79,195,247,0.8); }` (keyboard a11y)
+- `body.cursor-none` scoped cursor: none
+
+### Fonts
+- Inter (--font-sans), JetBrains Mono (--font-mono), Rubik Distressed (--font-grunge)
+
+### Public assets
+- `public/hero.mp4` — Seedance 5s loop (14MB, 21:9 → 1850×793)
+- `public/hero-poster.jpg` — 319KB, 21:9 clean plate
+- `public/signal-room.webp` — 264KB bunker still
+- `public/headshot.png` — 228KB (transparant)
+- `public/ai-headshot.jpg` — 98KB
+- `public/photos/studio3.jpg` — 95KB, Music-sectie artiest-afbeelding
+- `public/tracks/` — 8 MP3's + 8 webp covers
+
+### Connect sectie
+- Email boven copy: "Got something on your plate? Work for hire?" + "Or just here to hate? The inbox has thick skin."
+- contact@tmstry.com
+
+### Sanity plan
+- Gratis Free-plan (trial verlopen) — geen impact op features (geen private datasets, Studio Comments, Scheduled Drafts of AI Assist)
+
+### Layout providers (src/app/layout.tsx)
+- ThemeProvider > SignalRoomProvider > PlayerProvider > children + MiniPlayer + ScrollProgress + ConsoleSignal
+
+### ZERO SUM op de homepage (17/10/2026)
+- `src/components/zerosum/ZeroSumSection.tsx` (server, leest `https://zerosum.tmstry.com/api/time`, ISR 60s, fallback 6/11/2026 20:00 CET) + `ZeroSumRoom.tsx` (client): direct onder de hero; palet van de albumsite (soot/iron/brass/bone/ash/oxide, brass enige accent), werkplaats-still uit `public/zerosum/`, ademende lichtbundel, split-flap aftelling, tracklist als kassabon met cover erop geniet; fases countdown/open/live/archive (archive = endedAt of 6u na target)
+- Nav: messing "Zero Sum"-knop (desktop vanaf lg, ook in mobiel menu) scrollt naar #zerosum
+- Trackduren hardcoded uit Zero Sum/src/content/tracks.ts (totaal 29:56); albumproject zelf staat in ~/Zero Sum (HANDOFF.md)
