@@ -44,7 +44,15 @@ De BROADCAST-site (repo TMSTRY/broadcast, broadcast-flame.vercel.app) leunt op d
   (ingelogd). Eén per adres. In de Studio enkel te verwijderen (dupliceren zou een kopie op een
   publiek pad zetten). Limiet: 30 per afzender per 10 min, 300 per uur in totaal; BROADCAST remt zijn
   eigen bezoekers (5 per 10 min). Nog niets wordt gemaild: versturen komt later via een mailservice.
-- **Privacy** (`/privacy`) dekt nu beide sites, de reacties, de nieuwsbrief en Vercel Analytics.
+- **Say it anyway** (`src/app/api/say/route.ts`, type `broadcastWindow`): op het einde van de BROADCAST-
+  wandeling stuurt een bezoeker één regel (max 80 tekens, geen links/adressen/nummers); die wordt meteen
+  voor iedereen een verlicht raampje (Tims keuze). Publiek leesbaar (gewoon id, enkel de regel en de tijd).
+  Tim leest ze in de Studio, schrijft een antwoord (verschijnt op het raampje van de schrijver) of vinkt
+  "Hidden" aan (een regel met persoonsgegevens: verwijderen, want de dataset is publiek). Tekens worden
+  genormaliseerd (NFKC, onzichtbare tekens weg). **`SAY_SECRET`** (dezelfde willekeurige waarde in dit
+  Vercel-project en in dat van broadcast): dan neemt deze route enkel regels van BROADCAST aan, met een
+  limiet per bezoeker (3 per 10 min); zonder: van iedereen, 30 per afzender per 10 min. 200 per uur in totaal.
+- **Privacy** (`/privacy`) dekt nu beide sites, de reacties, de nieuwsbrief, Say it anyway en Vercel Analytics.
 
 ---
 

@@ -3,7 +3,8 @@ import { structureTool } from "sanity/structure";
 import { schemaTypes } from "./schemaTypes";
 
 // The BROADCAST site's facts are one fixed document, at the top of the list; newsletter sign-ups come
-// in through /api/subscribe only, and can only be deleted here (a duplicate would land on a public path).
+// in through /api/subscribe only, and can only be deleted here (a duplicate would land on a public path);
+// the BROADCAST windows come in through /api/say only.
 const SINGLE = "broadcastSite";
 
 export default defineConfig({
@@ -27,9 +28,11 @@ export default defineConfig({
     types: schemaTypes,
   },
   document: {
-    newDocumentOptions: (prev) => prev.filter((t) => t.templateId !== SINGLE && t.templateId !== "subscriber"),
+    newDocumentOptions: (prev) => prev.filter((t) => t.templateId !== SINGLE && t.templateId !== "subscriber" && t.templateId !== "broadcastWindow"),
     actions: (prev, ctx) =>
       ctx.schemaType === "subscriber" ? prev.filter((a) => a.action === "delete")
+      // (a window: answer or hide it and publish, or delete it; not duplicated)
+      : ctx.schemaType === "broadcastWindow" ? prev.filter((a) => a.action !== "duplicate")
       : ctx.schemaType === SINGLE ? prev.filter((a) => a.action === "publish" || a.action === "discardChanges" || a.action === "restore")
       : prev,
   },

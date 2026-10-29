@@ -40,6 +40,17 @@ export default function PrivacyPage() {
       </p>
 
       <h2 className="text-soft-white font-display font-semibold text-lg pt-4" style={{ letterSpacing: "0.04em" }}>
+        Say it anyway
+      </h2>
+      <p>
+        At the end of the BROADCAST walk you can send one line. It is shown to everyone who visits, as a
+        lit window, without your name. We store only the line and the time it was sent (in Sanity), and
+        your browser remembers which window is yours. Please do not write personal details in it. We may
+        hide any line, and you can ask us to delete yours at{" "}
+        <a href="mailto:contact@tmstry.com" className="text-glow-blue/70 hover:text-glow-blue underline underline-offset-4">contact@tmstry.com</a>.
+      </p>
+
+      <h2 className="text-soft-white font-display font-semibold text-lg pt-4" style={{ letterSpacing: "0.04em" }}>
         Third-party content
       </h2>
       <p>
