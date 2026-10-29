@@ -10,7 +10,7 @@ const archivo = Archivo({
 
 const FALLBACK: ScreeningState = {
   serverNow: 0,
-  targetAt: Date.parse("2026-11-06T20:00:00+01:00"),
+  targetAt: Date.parse("2026-11-06T23:20:00+01:00"),
   startedAt: null,
   endedAt: null,
 };

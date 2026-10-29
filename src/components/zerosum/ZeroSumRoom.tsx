@@ -43,6 +43,15 @@ function phaseAt(s: ScreeningState, now: number): Phase {
   return "open";
 }
 
+/** the screening's day and hour as the room has them (Brussels), from the album site's own time */
+function when(t: number) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Brussels", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" })
+    .formatToParts(new Date(t)).map((x) => [x.type, x.value]));
+  // (the zone by its offset from UTC, not the browser's name for it, so server and browser agree)
+  const off = (Number(p.hour) - new Date(t).getUTCHours() + 24) % 24;
+  return { day: `${p.day} · ${p.month} · ${p.year}`, hour: `${p.hour}:${p.minute} ${off === 2 ? "CEST" : "CET"}` };
+}
+
 function split(ms: number) {
   const t = Math.max(0, Math.floor(ms / 1000));
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -93,8 +102,9 @@ export default function ZeroSumRoom({ state, displayFont }: { state: ScreeningSt
   const units = now === null ? split(Math.max(0, state.targetAt - state.serverNow)) : split(state.targetAt - now);
   const ready = now !== null;
 
+  const w = when(state.targetAt);
   const plate =
-    phase === "countdown" ? "Private screening · 06 · 11 · 2026 · 20:00 CET"
+    phase === "countdown" ? `Private screening · ${w.day} · ${w.hour}`
     : phase === "open" ? "The room is open · the film starts soon"
     : phase === "live" ? "The film is running · come in, you'll join in sync"
     : "Out now · every track, every lyric, every number";
@@ -104,7 +114,7 @@ export default function ZeroSumRoom({ state, displayFont }: { state: ScreeningSt
     : phase === "archive" ? "Visit the album"
     : "Enter now";
 
-  const stamp = phase === "archive" ? "Sold" : "On sale 06 · 11 · 2026";
+  const stamp = phase === "archive" ? "Sold" : `On sale ${w.day}`;
 
   return (
     <section id="zerosum" className="relative overflow-hidden" style={{ background: SOOT }}>
@@ -265,7 +275,7 @@ export default function ZeroSumRoom({ state, displayFont }: { state: ScreeningSt
 
               <p className="tracking-[0.25em] uppercase text-[10px] pr-24">TMSTRY</p>
               <p className="tracking-[0.25em] uppercase text-[10px] pr-24">Zero Sum</p>
-              <p className="mt-1 tracking-[0.2em] uppercase text-[9px] opacity-60">Receipt · 06 · 11 · 2026</p>
+              <p className="mt-1 tracking-[0.2em] uppercase text-[9px] opacity-60">Receipt · {w.day}</p>
 
               <div className="my-4 border-t border-dashed" style={{ borderColor: "rgba(12,11,9,0.35)" }} />
 
