@@ -31,6 +31,21 @@
   dan het vangnet.
 - Tim antwoorden in het Nederlands, kort en in gewone taal; geen em-dashes in tekst of UI.
 
+## Voor de BROADCAST-site (29/10/2026)
+
+De BROADCAST-site (repo TMSTRY/broadcast, broadcast-flame.vercel.app) leunt op deze site:
+- **Studio-document "BROADCAST site"** (`src/sanity/schemaTypes/broadcastSite.ts`): Tim vult zelf de
+  YouTube-links van de clip en de making-of, de releasedatum en de streaminglinks van het nummer in.
+  Eén vast document (id `broadcastSite`), bovenaan in de Studio (`src/sanity/config.ts`); BROADCAST
+  leest het elke minuut (publiek, zonder token).
+- **Nieuwsbrief** (`src/app/api/subscribe/route.ts`, type `subscriber`): inschrijvingen van beide sites
+  komen hier binnen (BROADCAST stuurt ze door; het schrijftoken blijft enkel in dit project). Opgeslagen
+  onder een privé-pad (`subscriber.<hash>`): de publieke dataset toont ze nooit, enkel de Studio
+  (ingelogd). Eén per adres. In de Studio enkel te verwijderen (dupliceren zou een kopie op een
+  publiek pad zetten). Limiet: 30 per afzender per 10 min, 300 per uur in totaal; BROADCAST remt zijn
+  eigen bezoekers (5 per 10 min). Nog niets wordt gemaild: versturen komt later via een mailservice.
+- **Privacy** (`/privacy`) dekt nu beide sites, de reacties, de nieuwsbrief en Vercel Analytics.
+
 ---
 
 ## Tech Stack
